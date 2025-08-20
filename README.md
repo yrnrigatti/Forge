@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Forge 🏋️‍♂️
 
-## Getting Started
+## Descrição
+Forge é um app de registro de treinos.  
+Stack: **Next.js + TypeScript + Supabase (Postgres + Auth + Storage)**.  
 
-First, run the development server:
+## Estrutura
+- `src/app` → rotas (Next.js App Router)  
+- `src/components` → componentes reutilizáveis  
+- `src/lib/supabase.ts` → client Supabase  
+- `supabase/schema.sql` → schema inicial do banco  
 
+## Setup
 ```bash
+git clone <repo>
+cd forge
+npm install
+cp .env.local.example .env.local
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Funcionalidades (MVP)
+Autenticação (Supabase Auth)
+CRUD de exercícios
+CRUD de treinos
+Registro de sessões com sets
+Histórico simples
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🎨 Paleta de Cores
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Uso                  | Cor       | Hex       |
+| -------------------- | --------- | --------- |
+| Fundo principal      | Preto     | #121212   |
+| Seções/Card          | Cinza Escuro | #1F1F1F |
+| Bordas/Separadores   | Cinza Médio | #2C2C2C |
+| Texto principal      | Branco Claro | #E5E5E5 |
+| Texto secundário     | Cinza Claro | #A3A3A3 |
+| Detalhes (botões, highlights) | Laranja Fogo | #FF6B35 |
+| Alertas/Destaques    | Vermelho Fogo | #FF3D00 |
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🖌 Tipografia
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Títulos**: Roboto, bold, cores em branco (#E5E5E5)
+- **Textos**: Roboto, regular, cores em cinza claro (#A3A3A3)
+- **Botões/Highlights**: Roboto, medium, cores laranja/vermelho (#FF6B35 / #FF3D00)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🧱 Componentes UI
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Componente          | Estilo sugerido |
+| ------------------ | --------------- |
+| **Botões primários** | Fundo laranja (#FF6B35), texto branco, borda arredondada |
+| **Botões secundários** | Fundo cinza (#1F1F1F), texto laranja (#FF6B35), borda 1px laranja |
+| **Cards de treino** | Fundo cinza escuro (#1F1F1F), borda cinza médio (#2C2C2C), sombra leve |
+| **Alertas/Notificações** | Fundo vermelho (#FF3D00), texto branco (#E5E5E5) |
+| **Links e highlights** | Laranja (#FF6B35), underline opcional |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 📐 Layout / Espaçamento
+
+- **Padding principal**: 16px
+- **Margin entre seções**: 24px
+- **Border radius**: 8px em cards e botões
+- **Altura de linha de texto**: 1.5
+
+---
+
+## 🔧 Recomendações de Design
+
+1. Sempre usar fundo escuro (#121212) como base.
+2. Usar tons de cinza (#1F1F1F e #2C2C2C) para cards e separações, mantendo contraste com o texto.
+3. Botões e elementos importantes sempre com laranja/vermelho (#FF6B35 / #FF3D00) para destacar ações.
+4. Textos e informações secundárias em cinza claro (#A3A3A3) para hierarquia visual.
+5. Manter consistência de bordas arredondadas e espaçamentos padronizados.
+
+---
+
+## 🚀 Objetivo do Projeto
+
+O Forge é uma referência de UI escura e elegante, inspirada no fogo da forja, que serve como padrão visual para desenvolvimento de futuras telas, componentes e interações do app.
