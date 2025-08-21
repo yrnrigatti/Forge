@@ -1,4 +1,4 @@
-# Forge 🏋️‍♂️
+# Forge
 
 ## Descrição
 Forge é um app de registro de treinos.  

@@ -7,9 +7,12 @@ import { Exercise } from '@/types/exercise';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
+import { SessionService } from '@/services/sessionService';
+import { ExerciseStats } from '@/types/session';
 
 export default function ExerciseDetailPage() {
   const [exercise, setExercise] = useState<Exercise | null>(null);
+  const [exerciseStats, setExerciseStats] = useState<ExerciseStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -21,6 +24,7 @@ export default function ExerciseDetailPage() {
   useEffect(() => {
     if (user && exerciseId) {
       fetchExercise();
+      fetchExerciseStats();
     }
   }, [user, exerciseId]);
 
@@ -41,6 +45,15 @@ export default function ExerciseDetailPage() {
       setError('Exercício não encontrado');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchExerciseStats = async () => {
+    try {
+      const stats = await SessionService.getExerciseStats(exerciseId);
+      setExerciseStats(stats[0] || null);
+    } catch (error) {
+      console.error('Erro ao buscar estatísticas do exercício:', error);
     }
   };
 
@@ -302,14 +315,6 @@ export default function ExerciseDetailPage() {
                 🏋️ Adicionar ao Treino
               </Button>
               
-              <Button 
-                onClick={() => router.push(`/sessions/new?exercise=${exercise.id}`)}
-                variant="secondary"
-                className="w-full"
-              >
-                📊 Iniciar Sessão
-              </Button>
-              
               <hr 
                 style={{ borderColor: 'var(--border)' }}
                 className="my-4" 
@@ -326,7 +331,7 @@ export default function ExerciseDetailPage() {
             </div>
           </Card>
 
-          {/* Estatísticas (placeholder para futuras implementações) */}
+          {/* Estatísticas */}
           <Card 
             style={{
               backgroundColor: 'var(--card)',
@@ -341,29 +346,76 @@ export default function ExerciseDetailPage() {
             >
               Estatísticas
             </h3>
-            <div 
-              style={{ color: 'var(--muted-foreground)' }}
-              className="space-y-3 text-sm"
-            >
-              <div className="flex justify-between">
-                <span>Sessões realizadas:</span>
-                <span>-</span>
+            {exerciseStats ? (
+              <div 
+                style={{ color: 'var(--muted-foreground)' }}
+                className="space-y-3 text-sm"
+              >
+                <div className="flex justify-between">
+                  <span>Total de séries:</span>
+                  <span style={{ color: 'var(--foreground)' }}>{exerciseStats.total_sets}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Total de repetições:</span>
+                  <span style={{ color: 'var(--foreground)' }}>{exerciseStats.total_reps}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Volume total:</span>
+                  <span style={{ color: 'var(--foreground)' }}>{exerciseStats.total_volume.toFixed(1)} kg</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Peso máximo:</span>
+                  <span style={{ color: 'var(--foreground)' }}>{exerciseStats.max_weight} kg</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Peso médio:</span>
+                  <span style={{ color: 'var(--foreground)' }}>{exerciseStats.average_weight.toFixed(1)} kg</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Última sessão:</span>
+                  <span style={{ color: 'var(--foreground)' }}>
+                    {new Date(exerciseStats.last_session_date).toLocaleDateString('pt-BR')}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Progresso:</span>
+                  <span 
+                    style={{ 
+                      color: exerciseStats.progress_percentage >= 0 
+                        ? 'var(--success)' 
+                        : 'var(--destructive)' 
+                    }}
+                  >
+                    {exerciseStats.progress_percentage >= 0 ? '+' : ''}
+                    {exerciseStats.progress_percentage.toFixed(1)}%
+                  </span>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span>Última sessão:</span>
-                <span>-</span>
+            ) : (
+              <div 
+                style={{ color: 'var(--muted-foreground)' }}
+                className="space-y-3 text-sm"
+              >
+                <div className="flex justify-between">
+                  <span>Total de séries:</span>
+                  <span>0</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Última sessão:</span>
+                  <span>Nunca</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Volume total:</span>
+                  <span>0 kg</span>
+                </div>
+                <p 
+                  style={{ color: 'var(--muted-foreground)' }}
+                  className="text-xs mt-4"
+                >
+                  * Complete sessões com este exercício para ver as estatísticas
+                </p>
               </div>
-              <div className="flex justify-between">
-                <span>Melhor performance:</span>
-                <span>-</span>
-              </div>
-            </div>
-            <p 
-              style={{ color: 'var(--muted-foreground)' }}
-              className="text-xs mt-4"
-            >
-              * Estatísticas serão exibidas após implementar sessões
-            </p>
+            )}
           </Card>
         </div>
       </div>

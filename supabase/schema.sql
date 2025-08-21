@@ -27,7 +27,11 @@ create table if not exists sessions (
   id uuid primary key default gen_random_uuid(),
   user_id uuid references auth.users (id) on delete cascade,
   workout_id uuid references workouts (id),
-  date timestamp default now()
+  date timestamp default now(),
+  notes text,
+  duration integer,
+  completed boolean default false,
+  created_at timestamp default now()
 );
 
 create table if not exists sets (
@@ -36,5 +40,8 @@ create table if not exists sets (
   exercise_id uuid references exercises (id),
   reps int,
   weight numeric,
-  notes text
+  notes text,
+  rest_time integer,
+  completed boolean default false,
+  "order" integer default 0
 );

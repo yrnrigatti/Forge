@@ -1,4 +1,6 @@
 import { WorkoutWithExercises } from '@/types/workout';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
 
 interface WorkoutCardProps {
   workout: WorkoutWithExercises;
@@ -17,6 +19,8 @@ export function WorkoutCard({
   showActions = false,
   className = '' 
 }: WorkoutCardProps) {
+  const router = useRouter();
+  
   const handleCardClick = () => {
     if (onClick) {
       onClick(workout);
@@ -35,6 +39,11 @@ export function WorkoutCard({
     if (onDelete) {
       onDelete(workout);
     }
+  };
+
+  const handleStartWorkout = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    router.push(`/workouts/${workout.id}/start`);
   };
 
   return (
@@ -156,6 +165,21 @@ export function WorkoutCard({
           style={{ color: 'var(--secondary)' }}
         >
           Criado em {new Date(workout.created_at).toLocaleDateString('pt-BR')}
+        </div>
+        
+        {/* Botão Iniciar Treino */}
+        <div className="mt-4">
+          <Button
+            onClick={handleStartWorkout}
+            className="w-full"
+            style={{
+              background: 'var(--primary)',
+              color: 'var(--foreground)',
+              border: 'none'
+            }}
+          >
+            Iniciar Treino
+          </Button>
         </div>
       </div>
     </div>

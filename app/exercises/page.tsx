@@ -114,11 +114,12 @@ export default function ExercisesPage() {
     <div className="min-h-screen" style={{ background: 'var(--background)' }}>
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center gap-4">
+        <div className="mb-6">
+          {/* Linha superior: botão voltar e título */}
+          <div className="flex items-center gap-3 mb-4 sm:mb-0">
             <button
               onClick={() => router.push('/')}
-              className="w-10 h-10 rounded-lg transition-colors flex items-center justify-center"
+              className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg transition-colors flex items-center justify-center flex-shrink-0"
               style={{ 
                 backgroundColor: 'var(--muted)',
                 color: 'var(--muted-foreground)',
@@ -136,23 +137,27 @@ export default function ExercisesPage() {
             >
               ←
             </button>
-            <div>
-              <h1 className="text-3xl font-bold" style={{ color: 'var(--foreground)' }}>Meus Exercícios</h1>
-              <p className="mt-1" style={{ color: 'var(--muted-foreground)' }}>Gerencie sua biblioteca de exercícios</p>
+            <div className="min-w-0 flex-1">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold truncate" style={{ color: 'var(--foreground)' }}>Meus Exercícios</h1>
+              <p className="text-sm sm:text-base mt-1 truncate" style={{ color: 'var(--muted-foreground)' }}>Gerencie sua biblioteca de exercícios</p>
             </div>
           </div>
-          <button
-            onClick={() => router.push('/exercises/new')}
-            className="px-6 py-2 rounded-lg font-medium transition-colors"
-            style={{ 
-              background: 'var(--primary)', 
-              color: 'var(--foreground)' 
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.background = '#e55a2b'}
-            onMouseLeave={(e) => e.currentTarget.style.background = 'var(--primary)'}
-          >
-            + Novo Exercício
-          </button>
+          
+          {/* Linha inferior: botão novo exercício (centralizado no mobile) */}
+          <div className="flex justify-center sm:justify-end">
+            <button
+              onClick={() => router.push('/exercises/new')}
+              className="px-4 py-2 sm:px-6 sm:py-2 rounded-lg font-medium transition-colors text-sm sm:text-base w-full sm:w-auto max-w-xs sm:max-w-none"
+              style={{ 
+                background: 'var(--primary)', 
+                color: 'var(--foreground)' 
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = '#e55a2b'}
+              onMouseLeave={(e) => e.currentTarget.style.background = 'var(--primary)'}
+            >
+              + Novo Exercício
+            </button>
+          </div>
         </div>
 
         {/* Filtros */}
@@ -198,7 +203,7 @@ export default function ExercisesPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {exercises.length === 0 ? (
               <div className="col-span-full text-center py-12">
-                <div className="text-6xl mb-4" style={{ color: 'var(--secondary)' }}>💪</div>
+                <div className="text-6xl mb-4" style={{ color: 'var(--secondary)' }}>🏃‍♂️</div>
                 <h3 className="text-xl font-medium mb-2" style={{ color: 'var(--foreground)' }}>
                   {Object.keys(filters).some(key => filters[key as keyof typeof filters]) 
                     ? 'Nenhum exercício encontrado'

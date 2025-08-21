@@ -71,7 +71,7 @@ export function WorkoutList({
             className="mx-auto w-24 h-24 rounded-full flex items-center justify-center text-4xl mb-4"
             style={{ background: 'var(--border)' }}
           >
-            🏋️‍♂️
+            🏃‍♂️
           </div>
           <h3 
             className="text-xl font-semibold mb-2"

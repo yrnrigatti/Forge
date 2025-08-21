@@ -101,7 +101,7 @@ export default function RegisterPage() {
     <Card>
       <CardHeader className="text-center">
         <CardTitle className="text-3xl font-bold text-[#FF6B35]">
-          Forge 🏋️‍♂️
+          Forge
         </CardTitle>
         <CardDescription>
           Crie sua conta para começar

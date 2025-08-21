@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { WorkoutWithExercises, WorkoutFilters, WorkoutSortOption } from '@/types/workout'
 import { workoutService } from '@/services/workoutService'
 import { useAuth } from './useAuth'
@@ -22,6 +22,10 @@ export function useWorkouts(
   const [error, setError] = useState<string | null>(null)
   const { user } = useAuth()
 
+  // Estabilizar os parâmetros para evitar re-criação desnecessária do callback
+  const stableFilters = useMemo(() => filters, [JSON.stringify(filters)])
+  const stableSortBy = useMemo(() => sortBy, [sortBy])
+
   const fetchWorkouts = useCallback(async () => {
     if (!user) {
       setWorkouts([])
@@ -32,7 +36,7 @@ export function useWorkouts(
     try {
       setLoading(true)
       setError(null)
-      const data = await workoutService.getWorkouts(filters, sortBy)
+      const data = await workoutService.getWorkouts(stableFilters, stableSortBy)
       setWorkouts(data)
     } catch (error) {
       console.error('Erro ao buscar treinos:', error)
@@ -40,7 +44,7 @@ export function useWorkouts(
     } finally {
       setLoading(false)
     }
-  }, [user, filters, sortBy])
+  }, [user, stableFilters, stableSortBy])
 
   useEffect(() => {
     fetchWorkouts()

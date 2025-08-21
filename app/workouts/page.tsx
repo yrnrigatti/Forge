@@ -3,13 +3,16 @@
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { workoutService } from '@/services/workoutService'
+import { sessionService } from '@/services/sessionService'
 import { WorkoutWithExercises, WorkoutFilters, WorkoutSortBy } from '@/types/workout'
+import { SessionWithDetails } from '@/types/session'
 import { WorkoutList } from '@/components/workouts/WorkoutList'
 import { ErrorDisplay } from '@/components/ui/ErrorDisplay'
 import { useErrorHandler } from '@/hooks/useErrorHandler'
 import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Card } from '@/components/ui/card'
 
 export default function WorkoutsPage() {
   const router = useRouter()
@@ -17,6 +20,7 @@ export default function WorkoutsPage() {
   const { error, handleError, clearErrors } = useErrorHandler()
   
   const [workouts, setWorkouts] = useState<WorkoutWithExercises[]>([])
+  const [activeSessions, setActiveSessions] = useState<SessionWithDetails[]>([])
   const [loading, setLoading] = useState(true)
   const [searchDebounceTimer, setSearchDebounceTimer] = useState<NodeJS.Timeout | null>(null)
   const [filters, setFilters] = useState<WorkoutFilters>({
@@ -38,6 +42,21 @@ export default function WorkoutsPage() {
       handleError(err)
     } finally {
       setLoading(false)
+    }
+  }
+
+  // Função para carregar sessões ativas
+  const loadActiveSessions = async () => {
+    if (!user) return
+    
+    try {
+      const sessions = await sessionService.getSessions(
+        { status: 'active' },
+        'created_at_desc'
+      )
+      setActiveSessions(sessions)
+    } catch (err) {
+      console.error('Erro ao carregar sessões ativas:', err)
     }
   }
 
@@ -80,6 +99,7 @@ export default function WorkoutsPage() {
   useEffect(() => {
     if (user) {
       loadWorkouts()
+      loadActiveSessions()
     }
   }, [user])
 
@@ -108,6 +128,57 @@ export default function WorkoutsPage() {
     })
   }
 
+  // Remove these duplicate lines (lines 132-150):
+  // import { sessionService } from '@/services/sessionService'
+  // import { SessionWithDetails } from '@/types/session'
+  // const [activeSessions, setActiveSessions] = useState<SessionWithDetails[]>([])
+  // const loadActiveSessions = async () => { ... }
+
+  // Chamar no useEffect
+  useEffect(() => {
+    if (user) {
+      loadWorkouts()
+      loadActiveSessions()
+    }
+  }, [user]) // Remove 'filters' and 'sortBy' from dependencies since this should only run when user changes
+  
+  // Adicionar seção de sessões ativas antes da lista de treinos
+  {activeSessions.length > 0 && (
+    <Card className="p-6 mb-6" style={{ borderColor: 'var(--primary)' }}>
+      <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--foreground)' }}>
+        🏃‍♂️ Sessões Ativas
+      </h3>
+      <div className="space-y-3">
+        {activeSessions.map((session) => (
+          <div 
+            key={session.id} 
+            className="flex justify-between items-center p-3 rounded-lg"
+            style={{ background: 'var(--muted)' }}
+          >
+            <div>
+              <p className="font-medium" style={{ color: 'var(--foreground)' }}>
+                {session.workout?.name}
+              </p>
+              <p className="text-sm" style={{ color: 'var(--muted-foreground)' }}>
+                Iniciado em {new Date(session.created_at).toLocaleString('pt-BR')}
+              </p>
+            </div>
+            <Button
+              onClick={() => router.push(`/sessions/${session.id}`)}
+              size="sm"
+              style={{
+                background: 'var(--primary)',
+                color: 'var(--foreground)'
+              }}
+            >
+              Continuar
+            </Button>
+          </div>
+        ))}
+      </div>
+    </Card>
+  )}
+
   if (authLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -125,11 +196,12 @@ export default function WorkoutsPage() {
     <div className="min-h-screen" style={{ background: 'var(--background)' }}>
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center gap-4">
+        <div className="mb-6">
+          {/* Linha superior: botão voltar + título */}
+          <div className="flex items-center gap-3 mb-3">
             <button
               onClick={() => router.push('/')}
-              className="w-10 h-10 rounded-lg transition-colors flex items-center justify-center"
+              className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg transition-colors flex items-center justify-center flex-shrink-0"
               style={{ 
                 backgroundColor: 'var(--muted)',
                 color: 'var(--muted-foreground)',
@@ -147,23 +219,27 @@ export default function WorkoutsPage() {
             >
               ←
             </button>
-            <div>
-              <h1 className="text-3xl font-bold" style={{ color: 'var(--foreground)' }}>Meus Treinos</h1>
-              <p className="mt-1" style={{ color: 'var(--muted-foreground)' }}>Gerencie seus treinos e rotinas</p>
+            <div className="min-w-0 flex-1">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold truncate" style={{ color: 'var(--foreground)' }}>Meus Treinos</h1>
+              <p className="text-sm sm:text-base mt-1 truncate" style={{ color: 'var(--muted-foreground)' }}>Gerencie seus treinos e rotinas</p>
             </div>
           </div>
-          <button
-            onClick={() => router.push('/workouts/new')}
-            className="px-6 py-2 rounded-lg font-medium transition-colors"
-            style={{ 
-              background: 'var(--primary)', 
-              color: 'var(--foreground)' 
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.background = '#e55a2b'}
-            onMouseLeave={(e) => e.currentTarget.style.background = 'var(--primary)'}
-          >
-            + Novo Treino
-          </button>
+          
+          {/* Linha inferior: botão novo treino (centralizado no mobile) */}
+          <div className="flex justify-center sm:justify-end">
+            <button
+              onClick={() => router.push('/workouts/new')}
+              className="px-4 py-2 sm:px-6 sm:py-2 rounded-lg font-medium transition-colors text-sm sm:text-base w-full sm:w-auto max-w-xs sm:max-w-none"
+              style={{ 
+                background: 'var(--primary)', 
+                color: 'var(--foreground)' 
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = '#e55a2b'}
+              onMouseLeave={(e) => e.currentTarget.style.background = 'var(--primary)'}
+            >
+              + Novo Treino
+            </button>
+          </div>
         </div>
 
         {/* Filtros */}

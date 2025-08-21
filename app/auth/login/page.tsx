@@ -42,7 +42,7 @@ export default function LoginPage() {
     <Card>
       <CardHeader className="text-center">
         <CardTitle className="text-3xl font-bold text-[#FF6B35]">
-          Forge 🏋️‍♂️
+          Forge
         </CardTitle>
         <CardDescription>
           Entre na sua conta para continuar

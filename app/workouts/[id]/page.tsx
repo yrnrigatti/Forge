@@ -176,6 +176,12 @@ export default function WorkoutDetailPage() {
             {workout.name}
           </h1>
           <div className="flex space-x-2">
+            <Button 
+              onClick={() => router.push(`/workouts/${workoutId}/start`)}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              🏃‍♂️ Iniciar Treino
+            </Button>
             <Button onClick={handleEdit} variant="secondary">
               ✏️ Editar
             </Button>
@@ -497,3 +503,48 @@ export default function WorkoutDetailPage() {
     </div>
   );
 }
+
+          {/* Botões de ação */}
+          <div className="flex gap-3">
+            <Button
+              onClick={() => router.push(`/workouts/${workout.id}/start`)}
+              className="flex-1"
+              style={{
+                background: 'var(--primary)',
+                color: 'var(--foreground)',
+                border: 'none'
+              }}
+            >
+              Iniciar Treino
+            </Button>
+            <Button
+              onClick={() => router.back()}
+              variant="outline"
+              style={{
+                borderColor: 'var(--border)',
+                color: 'var(--foreground)'
+              }}
+            >
+              Voltar
+            </Button>
+            <Button
+              onClick={() => router.push(`/workouts/${workout.id}/edit`)}
+              variant="outline"
+              style={{
+                borderColor: 'var(--border)',
+                color: 'var(--foreground)'
+              }}
+            >
+              Editar
+            </Button>
+            <Button
+              onClick={handleDeleteWorkout}
+              variant="outline"
+              style={{
+                borderColor: 'var(--destructive)',
+                color: 'var(--destructive)'
+              }}
+            >
+              Excluir
+            </Button>
+          </div>

@@ -24,7 +24,7 @@ export default function Home() {
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <CardTitle className="text-3xl font-bold text-[#FF6B35]">
-              Forge 🏋️‍♂️
+              Forge
             </CardTitle>
             <CardDescription>
               Seu companheiro para treinos de academia
@@ -52,7 +52,7 @@ export default function Home() {
       <div className="max-w-4xl mx-auto">
         <header className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-[#FF6B35]">
-            Forge 🏋️‍♂️
+            Forge
           </h1>
           <div className="flex items-center gap-4">
             <span className="text-[#A3A3A3]">
