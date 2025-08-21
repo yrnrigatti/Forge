@@ -39,6 +39,10 @@ export default function ExerciseDetailPage() {
         return;
       }
       
+      // Debug: verificar o valor de is_global
+      console.log('Exercise data:', exercise);
+      console.log('is_global value:', exercise.is_global);
+      
       setExercise(exercise);
     } catch (error) {
       console.error('Erro ao buscar exercício:', error);
@@ -132,24 +136,34 @@ export default function ExerciseDetailPage() {
         >
           ← Voltar para Exercícios
         </Button>
-        <div className="flex justify-between items-start">
-          <h1 
-            style={{ color: 'var(--foreground)' }}
-            className="text-3xl font-bold"
-          >
-            {exercise.name}
-          </h1>
-          <div className="flex space-x-2">
-            <Button onClick={handleEdit} variant="secondary">
-              ✏️ Editar
-            </Button>
-            <Button 
-              onClick={handleDelete} 
-              variant="destructive"
-              disabled={deleting}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <h1 
+              style={{ color: 'var(--foreground)' }}
+              className="text-3xl font-bold"
             >
-              {deleting ? 'Excluindo...' : '🗑️ Excluir'}
-            </Button>
+              {exercise.name}
+            </h1>
+          </div>
+          <div className="flex space-x-2">
+            {(() => {
+              console.log('Renderização condicional - is_global:', exercise?.is_global);
+              console.log('Condição !exercise?.is_global:', !exercise?.is_global);
+              return !exercise?.is_global;
+            })() && (
+              <>
+                <Button onClick={handleEdit} variant="secondary">
+                  ✏️ Editar
+                </Button>
+                <Button 
+                  onClick={handleDelete} 
+                  variant="destructive"
+                  disabled={deleting}
+                >
+                  {deleting ? 'Excluindo...' : '🗑️ Excluir'}
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -178,12 +192,26 @@ export default function ExerciseDetailPage() {
                 >
                   Nome
                 </label>
-                <p 
-                  style={{ color: 'var(--foreground)' }}
-                  className="text-lg"
-                >
-                  {exercise.name}
-                </p>
+                <div className="flex items-center gap-2">
+                  <p 
+                    style={{ color: 'var(--foreground)' }}
+                    className="text-lg"
+                  >
+                    {exercise.name}
+                  </p>
+                  {exercise.is_global && (
+                    <span 
+                      style={{
+                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                        color: 'rgb(34, 197, 94)',
+                        border: '1px solid rgba(34, 197, 94, 0.2)'
+                      }}
+                      className="px-2 py-1 rounded-full text-xs font-medium"
+                    >
+                      🌍 Exercício Global
+                    </span>
+                  )}
+                </div>
               </div>
 
               {exercise.muscle_group && (
@@ -291,13 +319,17 @@ export default function ExerciseDetailPage() {
               Ações
             </h3>
             <div className="space-y-3">
-              <Button 
-                onClick={handleEdit}
-                variant="primary"
-                className="w-full"
-              >
-                ✏️ Editar Exercício
-              </Button>
+              {!exercise?.is_global && (
+                <>
+                  <Button 
+                    onClick={handleEdit}
+                    variant="primary"
+                    className="w-full"
+                  >
+                    ✏️ Editar Exercício
+                  </Button>
+                </>
+              )}
               
               <Button 
                 onClick={() => router.push(`/workouts/new?exercise=${exercise.id}`)}
@@ -307,19 +339,38 @@ export default function ExerciseDetailPage() {
                 🏋️ Adicionar ao Treino
               </Button>
               
-              <hr 
-                style={{ borderColor: 'var(--border)' }}
-                className="my-4" 
-              />
+              {!exercise?.is_global && (
+                <>
+                  <hr 
+                    style={{ borderColor: 'var(--border)' }}
+                    className="my-4" 
+                  />
+                  
+                  <Button 
+                    onClick={handleDelete}
+                    variant="destructive"
+                    disabled={deleting}
+                    className="w-full"
+                  >
+                    {deleting ? 'Excluindo...' : '🗑️ Excluir Exercício'}
+                  </Button>
+                </>
+              )}
               
-              <Button 
-                onClick={handleDelete}
-                variant="destructive"
-                disabled={deleting}
-                className="w-full"
-              >
-                {deleting ? 'Excluindo...' : '🗑️ Excluir Exercício'}
-              </Button>
+              {exercise?.is_global && (
+                <div 
+                  className="p-3 rounded-lg border text-center"
+                  style={{
+                    backgroundColor: 'rgba(255, 107, 53, 0.1)',
+                    borderColor: '#FF6B35',
+                    color: '#A3A3A3'
+                  }}
+                >
+                  <p className="text-sm">
+                    Exercícios globais não podem ser editados ou excluídos
+                  </p>
+                </div>
+              )}
             </div>
           </Card>
 

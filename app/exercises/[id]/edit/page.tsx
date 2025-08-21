@@ -42,6 +42,11 @@ export default function EditExercisePage() {
         return;
       }
       
+      if (exercise.is_global) {
+        setError('Exercícios globais não podem ser editados');
+        return;
+      }
+      
       setExercise(exercise);
       setFormData({
         name: exercise.name,
@@ -59,6 +64,12 @@ export default function EditExercisePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Verificar se é exercício global
+    if (exercise?.is_global) {
+      setError('Exercícios globais não podem ser editados');
+      return;
+    }
     
     if (!formData.name?.trim()) {
       setError('Nome do exercício é obrigatório');
