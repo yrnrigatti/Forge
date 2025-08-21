@@ -84,7 +84,7 @@ export default function ExercisesPage() {
     if (!confirm('Tem certeza que deseja excluir este exercício?')) {
       return
     }
-
+  
     try {
       await exerciseService.deleteExercise(id)
       setExercises(prev => prev.filter(exercise => exercise.id !== id))

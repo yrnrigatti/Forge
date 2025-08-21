@@ -7,7 +7,7 @@ interface ExerciseListProps {
   loading?: boolean;
   onExerciseClick?: (exercise: Exercise) => void;
   onExerciseEdit?: (exercise: Exercise) => void;
-  onExerciseDelete?: (exercise: Exercise) => void;
+  onExerciseDelete?: (exerciseId: string) => void; 
   onCreateNew?: () => void;
   showActions?: boolean;
   emptyMessage?: string;

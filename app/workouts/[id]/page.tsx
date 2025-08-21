@@ -178,7 +178,7 @@ export default function WorkoutDetailPage() {
               onClick={() => router.push(`/workouts/${workoutId}/start`)}
               className="bg-blue-600 hover:bg-blue-700 text-white"
             >
-              🏃‍♂️ Iniciar Treino
+              Iniciar Treino
             </Button>
             <Button onClick={handleEdit} variant="secondary">
               ✏️ Editar
@@ -378,7 +378,7 @@ export default function WorkoutDetailPage() {
                 variant="secondary"
                 className="w-full"
               >
-                🏃‍♂️ Iniciar Sessão
+                Iniciar Sessão
               </Button>
               
               <hr 

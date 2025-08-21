@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
 import { SessionService } from '@/services/sessionService';
+import { ExerciseService } from '@/services/exerciseService';
 import { ExerciseStats } from '@/types/session';
 
 export default function ExerciseDetailPage() {
@@ -31,15 +32,14 @@ export default function ExerciseDetailPage() {
   const fetchExercise = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('exercises')
-        .select('*')
-        .eq('id', exerciseId)
-        .eq('user_id', user?.id)
-        .single();
-
-      if (error) throw error;
-      setExercise(data);
+      const exercise = await ExerciseService.getExerciseById(exerciseId);
+      
+      if (!exercise) {
+        setError('Exercício não encontrado');
+        return;
+      }
+      
+      setExercise(exercise);
     } catch (error) {
       console.error('Erro ao buscar exercício:', error);
       setError('Exercício não encontrado');
@@ -68,13 +68,7 @@ export default function ExerciseDetailPage() {
 
     try {
       setDeleting(true);
-      const { error } = await supabase
-        .from('exercises')
-        .delete()
-        .eq('id', exerciseId)
-        .eq('user_id', user?.id);
-
-      if (error) throw error;
+      await ExerciseService.deleteExercise(exerciseId);
       router.push('/exercises');
     } catch (error) {
       console.error('Erro ao excluir exercício:', error);
@@ -160,9 +154,7 @@ export default function ExerciseDetailPage() {
         </div>
       </div>
 
-      {/* Detalhes do Exercício */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Informações Principais */}
         <div className="lg:col-span-2">
           <Card 
             style={{

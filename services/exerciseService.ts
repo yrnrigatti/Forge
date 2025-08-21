@@ -137,28 +137,29 @@ export class ExerciseService {
       let query = supabase
         .from('exercises')
         .select('*')
-        .eq('user_id', user.id)
+        .is('deleted_at', null)
+        .or(`user_id.eq.${user.id},user_id.is.null`) 
+        .order('is_global', { ascending: false })
         .order('name')
-
-      // Aplicar filtros
+  
       if (filters?.muscleGroup) {
         query = query.eq('muscle_group', filters.muscleGroup)
       }
-
+  
       if (filters?.type) {
         query = query.eq('type', filters.type)
       }
-
+  
       if (filters?.search) {
         query = query.ilike('name', `%${filters.search}%`)
       }
-
+  
       const { data, error } = await query
-
+  
       if (error) {
         throw ExerciseError.fromSupabaseError(error)
       }
-
+  
       return data || []
     } catch (error) {
       if (error instanceof ExerciseError) {
@@ -174,10 +175,8 @@ export class ExerciseService {
     }
   }
 
-  // Buscar exercício por ID com validação
   static async getExerciseById(id: string): Promise<Exercise | null> {
     try {
-      // Validar ID
       const validation = ExerciseValidations.validateExerciseId(id)
       if (!validation.isValid) {
         throw ExerciseError.fromValidationErrors(validation.errors)
@@ -196,16 +195,17 @@ export class ExerciseService {
         .from('exercises')
         .select('*')
         .eq('id', id)
-        .eq('user_id', user.id)
+        .is('deleted_at', null) 
+        .or(`user_id.eq.${user.id},user_id.is.null`) 
         .single()
-
+  
       if (error) {
         if (error.code === 'PGRST116') {
-          return null // Exercício não encontrado
+          return null
         }
         throw ExerciseError.fromSupabaseError(error)
       }
-
+  
       return data
     } catch (error) {
       if (error instanceof ExerciseError) {
@@ -221,46 +221,201 @@ export class ExerciseService {
     }
   }
 
-  // Deletar exercício
-  static async deleteExercise(id: string): Promise<void> {
+  static async getPersonalExercises(filters?: ExerciseFilters): Promise<Exercise[]> {
     try {
+      if (filters) {
+        const validation = ExerciseValidations.validateExerciseFilters(filters)
+        if (!validation.isValid) {
+          throw ExerciseError.fromValidationErrors(validation.errors)
+        }
+      }
+
       const { data: { user } } = await supabase.auth.getUser()
       
       if (!user) {
-        throw new Error('Usuário não autenticado')
+        throw new ExerciseError(
+          'Usuário não autenticado',
+          ExerciseErrorCode.UNAUTHORIZED
+        )
+      }
+
+      let query = supabase
+        .from('exercises')
+        .select('*')
+        .eq('user_id', user.id)
+        .is('deleted_at', null)
+        .order('name')
+  
+      if (filters?.muscleGroup) {
+        query = query.eq('muscle_group', filters.muscleGroup)
+      }
+  
+      if (filters?.type) {
+        query = query.eq('type', filters.type)
+      }
+  
+      if (filters?.search) {
+        query = query.ilike('name', `%${filters.search}%`)
+      }
+  
+      const { data, error } = await query
+  
+      if (error) {
+        throw ExerciseError.fromSupabaseError(error)
+      }
+  
+      return data || []
+    } catch (error) {
+      if (error instanceof ExerciseError) {
+        throw error
+      }
+      console.error('Erro no serviço getPersonalExercises:', error)
+      throw new ExerciseError(
+        'Erro ao buscar exercícios pessoais',
+        ExerciseErrorCode.UNKNOWN_ERROR,
+        undefined,
+        error as Error
+      )
+    }
+  }
+
+  static async getGlobalExercises(filters?: ExerciseFilters): Promise<Exercise[]> {
+    try {
+      if (filters) {
+        const validation = ExerciseValidations.validateExerciseFilters(filters)
+        if (!validation.isValid) {
+          throw ExerciseError.fromValidationErrors(validation.errors)
+        }
+      }
+
+      let query = supabase
+        .from('exercises')
+        .select('*')
+        .is('user_id', null) 
+        .is('deleted_at', null)
+        .order('name')
+  
+      if (filters?.muscleGroup) {
+        query = query.eq('muscle_group', filters.muscleGroup)
+      }
+  
+      if (filters?.type) {
+        query = query.eq('type', filters.type)
+      }
+  
+      if (filters?.search) {
+        query = query.ilike('name', `%${filters.search}%`)
+      }
+  
+      const { data, error } = await query
+  
+      if (error) {
+        throw ExerciseError.fromSupabaseError(error)
+      }
+  
+      return data || []
+    } catch (error) {
+      console.error('Erro no serviço getGlobalExercises:', error)
+      throw new ExerciseError(
+        'Erro ao buscar exercícios globais',
+        ExerciseErrorCode.UNKNOWN_ERROR,
+        undefined,
+        error as Error
+      )
+    }
+  }
+
+  static async deleteExercise(id: string): Promise<void> {
+    try {
+      const validation = ExerciseValidations.validateExerciseId(id)
+      if (!validation.isValid) {
+        throw ExerciseError.fromValidationErrors(validation.errors)
+      }
+
+      const { data: { user } } = await supabase.auth.getUser()
+      
+      if (!user) {
+        throw new ExerciseError(
+          'Usuário não autenticado',
+          ExerciseErrorCode.UNAUTHORIZED
+        )
       }
 
       const { error } = await supabase
         .from('exercises')
-        .delete()
+        .update({ deleted_at: new Date().toISOString() })
+        .eq('id', id)
+        .eq('user_id', user.id)
+        .is('deleted_at', null) 
+
+      if (error) {
+        throw ExerciseError.fromSupabaseError(error)
+      }
+    } catch (error) {
+      if (error instanceof ExerciseError) {
+        throw error
+      }
+      console.error('Erro no serviço deleteExercise:', error)
+      throw new ExerciseError(
+        'Erro ao deletar exercício',
+        ExerciseErrorCode.UNKNOWN_ERROR,
+        undefined,
+        error as Error
+      )
+    }
+  }
+
+  static async restoreExercise(id: string): Promise<void> {
+    try {
+      const validation = ExerciseValidations.validateExerciseId(id)
+      if (!validation.isValid) {
+        throw ExerciseError.fromValidationErrors(validation.errors)
+      }
+
+      const { data: { user } } = await supabase.auth.getUser()
+      
+      if (!user) {
+        throw new ExerciseError(
+          'Usuário não autenticado',
+          ExerciseErrorCode.UNAUTHORIZED
+        )
+      }
+
+      const { error } = await supabase
+        .from('exercises')
+        .update({ deleted_at: null })
         .eq('id', id)
         .eq('user_id', user.id)
 
       if (error) {
-        throw new Error(`Erro ao deletar exercício: ${error.message}`)
+        throw ExerciseError.fromSupabaseError(error)
       }
     } catch (error) {
-      console.error('Erro no serviço deleteExercise:', error)
-      throw error
+      if (error instanceof ExerciseError) {
+        throw error
+      }
+      console.error('Erro no serviço restoreExercise:', error)
+      throw new ExerciseError(
+        'Erro ao restaurar exercício',
+        ExerciseErrorCode.UNKNOWN_ERROR,
+        undefined,
+        error as Error
+      )
     }
   }
 
-  // Buscar exercícios por grupo muscular
   static async getExercisesByMuscleGroup(muscleGroup: string): Promise<Exercise[]> {
     return this.getExercises({ muscleGroup })
   }
 
-  // Buscar exercícios por tipo
   static async getExercisesByType(type: string): Promise<Exercise[]> {
     return this.getExercises({ type })
   }
 
-  // Buscar exercícios por nome
   static async searchExercises(search: string): Promise<Exercise[]> {
     return this.getExercises({ search })
   }
 
-  // Verificar se usuário tem exercícios
   static async hasExercises(): Promise<boolean> {
     try {
       const { data: { user } } = await supabase.auth.getUser()
@@ -273,7 +428,8 @@ export class ExerciseService {
         .from('exercises')
         .select('*', { count: 'exact', head: true })
         .eq('user_id', user.id)
-
+        .is('deleted_at', null)
+  
       return (count || 0) > 0
     } catch (error) {
       console.error('Erro no serviço hasExercises:', error)
@@ -281,7 +437,6 @@ export class ExerciseService {
     }
   }
 
-  // Obter contagem de exercícios por grupo muscular
   static async getExerciseCountByMuscleGroup(): Promise<Record<string, number>> {
     try {
       const { data: { user } } = await supabase.auth.getUser()
@@ -294,7 +449,8 @@ export class ExerciseService {
         .from('exercises')
         .select('muscle_group')
         .eq('user_id', user.id)
-
+        .is('deleted_at', null) 
+  
       if (error) {
         throw new Error(`Erro ao contar exercícios: ${error.message}`)
       }
@@ -303,7 +459,7 @@ export class ExerciseService {
       data?.forEach(exercise => {
         counts[exercise.muscle_group] = (counts[exercise.muscle_group] || 0) + 1
       })
-
+  
       return counts
     } catch (error) {
       console.error('Erro no serviço getExerciseCountByMuscleGroup:', error)

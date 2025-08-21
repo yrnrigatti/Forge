@@ -1,11 +1,13 @@
 export interface Exercise {
-  id: string;
-  user_id: string;
-  name: string;
-  muscle_group: string | null;
-  type: string | null;
-  notes: string | null;
-  created_at: string;
+  id: string
+  user_id?: string
+  name: string
+  muscle_group?: string | null
+  type?: string | null
+  notes?: string | null
+  is_global?: boolean
+  deleted_at?: string | null 
+  created_at: string
 }
 
 export interface CreateExerciseData {
@@ -17,9 +19,9 @@ export interface CreateExerciseData {
 
 export interface UpdateExerciseData {
   name?: string;
-  muscle_group?: string;
-  type?: string;
-  notes?: string;
+  muscle_group?: string | null;
+  type?: string | null;
+  notes?: string | null;
 }
 
 // Enums para grupos musculares

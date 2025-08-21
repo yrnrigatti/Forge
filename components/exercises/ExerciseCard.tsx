@@ -3,7 +3,7 @@ import { Exercise } from '@/types/exercise';
 interface ExerciseCardProps {
   exercise: Exercise;
   onEdit?: (exercise: Exercise) => void;
-  onDelete?: (exercise: Exercise) => void;
+  onDelete?: (exerciseId: string) => void;  
   onClick?: (exercise: Exercise) => void;
   showActions?: boolean;
   className?: string;
@@ -33,7 +33,7 @@ export function ExerciseCard({
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (onDelete) {
-      onDelete(exercise);
+      onDelete(exercise.id);
     }
   };
 
@@ -48,59 +48,41 @@ export function ExerciseCard({
       }}
     >
       <div className="space-y-3">
-        {/* Header com nome e ações */}
-        <div className="flex justify-between items-start">
-          <h3 
-            className="text-xl font-semibold flex-1"
-            style={{ color: 'var(--foreground)' }}
-          >
-            {exercise.name}
-          </h3>
-          {showActions && (
-            <div className="flex space-x-2 ml-4">
-              <button
-                onClick={handleEdit}
-                className="p-2 rounded transition-colors"
-                style={{
-                  background: 'var(--card)',
-                  border: '1px solid var(--primary)',
-                  color: 'var(--primary)'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'var(--primary)';
-                  e.currentTarget.style.color = 'var(--foreground)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'var(--card)';
-                  e.currentTarget.style.color = 'var(--primary)';
-                }}
-              >
-                ✏️
-              </button>
-              <button
-                onClick={handleDelete}
-                className="p-2 rounded transition-colors"
-                style={{
-                  background: 'var(--card)',
-                  border: '1px solid var(--destructive)',
-                  color: 'var(--destructive)'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'var(--destructive)';
-                  e.currentTarget.style.color = 'var(--foreground)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'var(--card)';
-                  e.currentTarget.style.color = 'var(--destructive)';
-                }}
-              >
-                🗑️
-              </button>
-            </div>
-          )}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <h3 className="font-medium">{exercise.name}</h3>
+            {exercise.is_global && (
+              <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
+                Global
+              </span>
+            )}
+          </div>
+          <div className="flex gap-2">
+            {!exercise.is_global && (
+              <>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit?.(exercise);
+                  }}
+                  className="p-1 text-gray-600 hover:text-blue-600"
+                >
+                  ✏️
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete?.(exercise.id);
+                  }}
+                  className="p-1 text-gray-600 hover:text-red-600"
+                >
+                  🗑️
+                </button>
+              </>
+            )}
+          </div>
         </div>
         
-        {/* Tags de grupo muscular e tipo */}
         <div className="flex flex-wrap gap-2">
           {exercise.muscle_group && (
             <span 
@@ -127,7 +109,6 @@ export function ExerciseCard({
           )}
         </div>
         
-        {/* Notas (preview) */}
         {exercise.notes && (
           <p 
             className="text-sm line-clamp-2"
@@ -137,7 +118,6 @@ export function ExerciseCard({
           </p>
         )}
         
-        {/* Data de criação */}
         <div 
           className="text-xs"
           style={{ color: 'var(--secondary)' }}

@@ -130,7 +130,7 @@ export default function WorkoutsPage() {
   {activeSessions.length > 0 && (
     <Card className="p-6 mb-6" style={{ borderColor: 'var(--primary)' }}>
       <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--foreground)' }}>
-        🏃‍♂️ Sessões Ativas
+        Sessões Ativas
       </h3>
       <div className="space-y-3">
         {activeSessions.map((session) => (
