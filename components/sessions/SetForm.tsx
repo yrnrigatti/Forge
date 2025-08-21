@@ -7,7 +7,7 @@ import { Card } from '@/components/ui/card'
 
 interface SetFormProps {
   initialData?: Partial<CreateSetData | UpdateSetData>
-  exercise?: Exercise
+  exercise?: Pick<Exercise, 'id' | 'name' | 'muscle_group' | 'type'>
   onSubmit: (data: CreateSetData | UpdateSetData) => Promise<void>
   onCancel?: () => void
   submitLabel?: string

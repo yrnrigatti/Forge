@@ -94,6 +94,7 @@ export interface SessionFilters {
   date_from?: string;
   date_to?: string;
   completed?: boolean;
+  status?: 'active' | 'completed' | 'cancelled' | 'paused';
   search?: string;
 }
 
@@ -104,6 +105,7 @@ export interface AddSetToSessionData {
   weight: number;
   notes?: string;
   rest_time?: number;
+  order?: number;
 }
 
 // Dados para reordenar sets na sessão
@@ -121,7 +123,9 @@ export const SESSION_SORT_OPTIONS = [
   'volume_asc',
   'volume_desc',
   'workout_name_asc',
-  'workout_name_desc'
+  'workout_name_desc',
+  'created_at_asc',
+  'created_at_desc'
 ] as const;
 
 export type SessionSortOption = typeof SESSION_SORT_OPTIONS[number];
@@ -135,7 +139,9 @@ export const SESSION_SORT_LABELS: Record<SessionSortOption, string> = {
   volume_asc: 'Volume (Menor)',
   volume_desc: 'Volume (Maior)',
   workout_name_asc: 'Treino (A-Z)',
-  workout_name_desc: 'Treino (Z-A)'
+  workout_name_desc: 'Treino (Z-A)',
+  created_at_asc: 'Criação (Mais Antigas)',
+  created_at_desc: 'Criação (Mais Recentes)'
 };
 
 // Estatísticas de sessão

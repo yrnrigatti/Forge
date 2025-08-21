@@ -36,6 +36,8 @@ export interface WorkoutFilters {
   search?: string;
   dateFrom?: string;
   dateTo?: string;
+  sortBy?: 'name' | 'created_at' | 'exercise_count';
+  sortOrder?: 'asc' | 'desc';
 }
 
 // Dados para adicionar exercício ao treino

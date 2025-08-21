@@ -18,7 +18,6 @@ import {
 } from '@/types/session'
 
 export class SessionService {
-  // Listar sessões com filtros e ordenação
   static async getSessions(filters: SessionFilters = {}, sortBy: SessionSortOption = 'date_desc'): Promise<SessionWithDetails[]> {
     try {
       const { data: { user } } = await supabase.auth.getUser()
@@ -47,7 +46,6 @@ export class SessionService {
         `)
         .eq('user_id', user.id)
 
-      // Aplicar filtros
       if (filters.workout_id) {
         query = query.eq('workout_id', filters.workout_id)
       }
@@ -68,7 +66,6 @@ export class SessionService {
         query = query.or(`notes.ilike.%${filters.search}%,workout.name.ilike.%${filters.search}%`)
       }
 
-      // Aplicar ordenação
       switch (sortBy) {
         case 'date_asc':
           query = query.order('date', { ascending: true })
@@ -98,12 +95,11 @@ export class SessionService {
         throw new Error(`Erro ao buscar sessões: ${error.message}`)
       }
 
-      // Processar dados para incluir estatísticas
       const sessionsWithDetails: SessionWithDetails[] = (data || []).map(session => {
         const sortedSets = (session.sets || [])
-          .sort((a, b) => (a.order || 0) - (b.order || 0))
+          .sort((a: SetWithExercise, b: SetWithExercise) => (a.order || 0) - (b.order || 0))
         
-        const totalVolume = sortedSets.reduce((sum, set) => {
+        const totalVolume = sortedSets.reduce((sum: number, set: SetWithExercise) => {
           return sum + (set.weight * set.reps)
         }, 0)
 
@@ -115,7 +111,6 @@ export class SessionService {
         }
       })
 
-      // Ordenação por volume (feita no cliente)
       if (sortBy === 'volume_asc' || sortBy === 'volume_desc') {
         sessionsWithDetails.sort((a, b) => {
           const diff = a.total_volume - b.total_volume
@@ -130,7 +125,6 @@ export class SessionService {
     }
   }
 
-  // Buscar sessão por ID
   static async getSessionById(id: string): Promise<SessionWithDetails> {
     try {
       const { data: { user } } = await supabase.auth.getUser()
@@ -174,13 +168,15 @@ export class SessionService {
       }
 
       const sortedSets = (data.sets || [])
-        .sort((a, b) => (a.order || 0) - (b.order || 0))
+        .sort((a: SetWithExercise, b: SetWithExercise) => (a.order || 0) - (b.order || 0))
       
-      const totalVolume = sortedSets.reduce((sum, set) => {
-        return sum + (set.weight * set.reps)
+      const totalVolume = sortedSets.reduce((sum: number, set: SetWithExercise) => {
+        if (set.exercise?.type === 'repetition') {
+          return sum + (set.weight * set.reps)
+        }
+        return sum
       }, 0)
 
-      // Transformar workout_exercises para o formato esperado
       const workoutWithExercises = {
         ...data.workout,
         exercises: data.workout?.workout_exercises?.map((we: any) => ({
@@ -201,7 +197,6 @@ export class SessionService {
     }
   }
 
-  // Criar nova sessão
   static async createSession(sessionData: CreateSessionData): Promise<Session> {
     try {
       const { data: { user } } = await supabase.auth.getUser()
@@ -209,11 +204,11 @@ export class SessionService {
       if (!user) {
         throw new Error('Usuário não autenticado')
       }
-
+  
       const { data, error } = await supabase
         .from('sessions')
         .insert({
-          user_id: user.id,
+          user_id: user.id, // user_id é adicionado automaticamente aqui
           workout_id: sessionData.workout_id,
           date: sessionData.date || new Date().toISOString(),
           notes: sessionData.notes,
@@ -233,14 +228,12 @@ export class SessionService {
     }
   }
 
-  // Iniciar sessão de treino
   static async startWorkoutSession(workoutData: StartWorkoutSessionData): Promise<Session> {
     try {
       const session = await this.createSession({
         workout_id: workoutData.workout_id
       })
 
-      // Criar sets iniciais baseados no treino
       for (let i = 0; i < workoutData.exercises.length; i++) {
         const exercise = workoutData.exercises[i]
         
@@ -261,7 +254,6 @@ export class SessionService {
     }
   }
 
-  // Atualizar sessão existente
   static async updateSession(id: string, sessionData: UpdateSessionData): Promise<Session> {
     try {
       const { data: { user } } = await supabase.auth.getUser()
@@ -289,7 +281,6 @@ export class SessionService {
     }
   }
 
-  // Deletar sessão
   static async deleteSession(id: string): Promise<void> {
     try {
       const { data: { user } } = await supabase.auth.getUser()
@@ -313,7 +304,6 @@ export class SessionService {
     }
   }
 
-  // Adicionar set à sessão
   static async addSetToSession(sessionId: string, setData: AddSetToSessionData): Promise<SetWithExercise> {
     try {
       const { data: { user } } = await supabase.auth.getUser()
@@ -322,7 +312,6 @@ export class SessionService {
         throw new Error('Usuário não autenticado')
       }
 
-      // Verificar se a sessão pertence ao usuário
       const { data: session } = await supabase
         .from('sessions')
         .select('id')
@@ -334,7 +323,6 @@ export class SessionService {
         throw new Error('Sessão não encontrada')
       }
 
-      // Se não foi especificada uma ordem, usar a próxima disponível
       let order = setData.order
       if (order === undefined) {
         const { data: lastSet } = await supabase
@@ -382,7 +370,6 @@ export class SessionService {
     }
   }
 
-  // Atualizar set
   static async updateSet(setId: string, setData: UpdateSetData): Promise<SetWithExercise> {
     try {
       const { data: { user } } = await supabase.auth.getUser()
@@ -391,7 +378,6 @@ export class SessionService {
         throw new Error('Usuário não autenticado')
       }
 
-      // Verificar se o set pertence a uma sessão do usuário
       const { data: set } = await supabase
         .from('sets')
         .select(`
@@ -402,8 +388,8 @@ export class SessionService {
         `)
         .eq('id', setId)
         .single()
-
-      if (!set || set.session.user_id !== user.id) {
+      
+      if (!set || (set.session as any).user_id !== user.id) {
         throw new Error('Set não encontrado')
       }
 
@@ -433,7 +419,6 @@ export class SessionService {
     }
   }
 
-  // Remover set da sessão
   static async removeSetFromSession(setId: string): Promise<void> {
     try {
       const { data: { user } } = await supabase.auth.getUser()
@@ -442,7 +427,6 @@ export class SessionService {
         throw new Error('Usuário não autenticado')
       }
 
-      // Verificar se o set pertence a uma sessão do usuário
       const { data: set } = await supabase
         .from('sets')
         .select(`
@@ -453,8 +437,8 @@ export class SessionService {
         `)
         .eq('id', setId)
         .single()
-
-      if (!set || set.session.user_id !== user.id) {
+      
+      if (!set || (set.session as any).user_id !== user.id) {
         throw new Error('Set não encontrado')
       }
 
@@ -472,7 +456,6 @@ export class SessionService {
     }
   }
 
-  // Reordenar sets na sessão
   static async reorderSessionSets(reorderData: ReorderSessionSetData[]): Promise<void> {
     try {
       const { data: { user } } = await supabase.auth.getUser()
@@ -481,7 +464,6 @@ export class SessionService {
         throw new Error('Usuário não autenticado')
       }
 
-      // Atualizar cada set com sua nova ordem
       for (const item of reorderData) {
         const { error } = await supabase
           .from('sets')
@@ -498,7 +480,6 @@ export class SessionService {
     }
   }
 
-  // Finalizar sessão
   static async completeSession(sessionId: string, duration?: number): Promise<Session> {
     try {
       return await this.updateSession(sessionId, {
@@ -511,7 +492,6 @@ export class SessionService {
     }
   }
 
-  // Obter estatísticas gerais do usuário
   static async getSessionStats(): Promise<SessionStats> {
     try {
       const { data: { user } } = await supabase.auth.getUser()
@@ -531,7 +511,6 @@ export class SessionService {
         ? completedSessions.reduce((sum, session) => sum + (session.duration || 0), 0) / completedSessions.length
         : 0
 
-      // Calcular streak atual e melhor
       const sortedSessions = completedSessions
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
       
@@ -569,7 +548,6 @@ export class SessionService {
       
       if (tempStreak > bestStreak) bestStreak = tempStreak
 
-      // Sessões desta semana e mês
       const oneWeekAgo = new Date()
       oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
       
@@ -584,7 +562,6 @@ export class SessionService {
         new Date(s.date) >= oneMonthAgo
       ).length
 
-      // Treino favorito
       const workoutCounts: Record<string, number> = {}
       completedSessions.forEach(session => {
         workoutCounts[session.workout.name] = (workoutCounts[session.workout.name] || 0) + 1
@@ -596,7 +573,7 @@ export class SessionService {
 
       return {
         total_sessions: completedSessions.length,
-        total_volume,
+        total_volume: totalVolume, 
         average_duration: averageDuration,
         favorite_workout: favoriteWorkout,
         current_streak: currentStreak,
@@ -610,7 +587,6 @@ export class SessionService {
     }
   }
 
-  // Obter estatísticas por exercício (versão simplificada)
   static async getExerciseStats(exerciseId?: string): Promise<ExerciseStats[]> {
     try {
       const { data: { user } } = await supabase.auth.getUser()
@@ -619,7 +595,6 @@ export class SessionService {
         throw new Error('Usuário não autenticado')
       }
 
-      // Query mais simples - buscar todos os sets do exercício
       let query = supabase
         .from('sets')
         .select(`
@@ -646,13 +621,12 @@ export class SessionService {
         throw new Error(`Erro ao buscar estatísticas de exercícios: ${error.message}`)
       }
 
-      console.log('Sets encontrados:', data?.length || 0) // Debug
+      console.log('Sets encontrados:', data?.length || 0)
 
       if (!data || data.length === 0) {
         return []
       }
 
-      // Agrupar por exercício
       const exerciseGroups: Record<string, any[]> = {}
       data.forEach(set => {
         if (!exerciseGroups[set.exercise_id]) {
@@ -675,7 +649,6 @@ export class SessionService {
         )
         const lastSessionDate = sortedByDate[0]?.session.date
         
-        // Calcular progresso (comparar últimas 5 sessões com 5 anteriores)
         const recentSets = sortedByDate.slice(0, 5)
         const olderSets = sortedByDate.slice(5, 10)
         
@@ -711,12 +684,10 @@ export class SessionService {
     }
   }
 
-  // Buscar sessões por treino
   static async getSessionsByWorkout(workoutId: string): Promise<SessionWithDetails[]> {
     return this.getSessions({ workout_id: workoutId })
   }
 
-  // Verificar se o usuário possui sessões
   static async hasSessions(): Promise<boolean> {
     try {
       const sessions = await this.getSessions()
@@ -727,7 +698,6 @@ export class SessionService {
     }
   }
 
-  // Contar total de sessões do usuário
   static async getSessionCount(): Promise<number> {
     try {
       const { data: { user } } = await supabase.auth.getUser()
@@ -752,17 +722,14 @@ export class SessionService {
     }
   }
 
-  // Iniciar treino (método simplificado)
   static async startWorkout(workoutId: string): Promise<SessionWithDetails> {
     try {
-      // Criar sessão
       const session = await this.createSession({
         workout_id: workoutId,
         status: 'active',
         started_at: new Date().toISOString()
       })
 
-      // Retornar sessão com detalhes
       return await this.getSessionById(session.id)
     } catch (error) {
       console.error('Erro no serviço startWorkout:', error)
@@ -771,5 +738,4 @@ export class SessionService {
   }
 }
 
-// Instância padrão para exportação
 export const sessionService = SessionService

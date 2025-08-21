@@ -57,7 +57,9 @@ export function useSessions(
         status: 'active'
       })
       await refreshSessions()
-      return newSession
+      // Buscar a sessão completa com detalhes
+      const sessionWithDetails = await sessionService.getSessionById(newSession.id)
+      return sessionWithDetails
     } catch (error) {
       console.error('Erro ao criar sessão:', error)
       setError('Erro ao criar sessão')

@@ -81,7 +81,7 @@ export function useSession(sessionId: string): UseSessionReturn {
 
   const removeSet = useCallback(async (setId: string): Promise<boolean> => {
     try {
-      await sessionService.deleteSet(setId)
+      await sessionService.removeSetFromSession(setId)
       await refreshSession()
       return true
     } catch (error) {

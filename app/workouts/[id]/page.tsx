@@ -98,7 +98,6 @@ export default function WorkoutDetailPage() {
 
       if (error) throw error;
       
-      // Atualizar a lista local
       setWorkout(prev => {
         if (!prev) return prev;
         return {
@@ -159,7 +158,6 @@ export default function WorkoutDetailPage() {
       }}
       className="container mx-auto p-6 max-w-4xl"
     >
-      {/* Header */}
       <div className="mb-6">
         <Button 
           onClick={() => router.push('/workouts')}
@@ -195,10 +193,7 @@ export default function WorkoutDetailPage() {
           </div>
         </div>
       </div>
-
-      {/* Detalhes do Treino */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Informações Principais */}
         <div className="lg:col-span-2">
           <Card 
             style={{
@@ -230,31 +225,6 @@ export default function WorkoutDetailPage() {
                 </p>
               </div>
 
-              {workout.description && (
-                <div>
-                  <label 
-                    style={{ color: 'var(--muted-foreground)' }}
-                    className="block text-sm font-medium mb-1"
-                  >
-                    Descrição
-                  </label>
-                  <div 
-                    style={{
-                      backgroundColor: 'var(--accent)',
-                      borderColor: 'var(--border)'
-                    }}
-                    className="p-4 rounded-lg border"
-                  >
-                    <p 
-                      style={{ color: 'var(--foreground)' }}
-                      className="whitespace-pre-wrap"
-                    >
-                      {workout.description}
-                    </p>
-                  </div>
-                </div>
-              )}
-
               <div>
                 <label 
                   style={{ color: 'var(--muted-foreground)' }}
@@ -275,7 +245,6 @@ export default function WorkoutDetailPage() {
             </div>
           </Card>
 
-          {/* Lista de Exercícios */}
           <Card 
             style={{
               backgroundColor: 'var(--card)',
@@ -347,32 +316,6 @@ export default function WorkoutDetailPage() {
                           )}
                         </div>
                       </div>
-                      
-                      {(workoutExercise.sets || workoutExercise.reps || workoutExercise.weight) && (
-                        <div 
-                          style={{ color: 'var(--muted-foreground)' }}
-                          className="text-sm mt-2 flex space-x-4"
-                        >
-                          {workoutExercise.sets && (
-                            <span>Séries: {workoutExercise.sets}</span>
-                          )}
-                          {workoutExercise.reps && (
-                            <span>Repetições: {workoutExercise.reps}</span>
-                          )}
-                          {workoutExercise.weight && (
-                            <span>Peso: {workoutExercise.weight}kg</span>
-                          )}
-                        </div>
-                      )}
-                      
-                      {workoutExercise.notes && (
-                        <p 
-                          style={{ color: 'var(--muted-foreground)' }}
-                          className="text-sm mt-2 italic"
-                        >
-                          {workoutExercise.notes}
-                        </p>
-                      )}
                     </div>
                     
                     <div className="flex space-x-2">
@@ -398,7 +341,6 @@ export default function WorkoutDetailPage() {
           </Card>
         </div>
 
-        {/* Sidebar com Ações */}
         <div>
           <Card 
             style={{
@@ -455,7 +397,6 @@ export default function WorkoutDetailPage() {
             </div>
           </Card>
 
-          {/* Estatísticas do Treino */}
           <Card 
             style={{
               backgroundColor: 'var(--card)',
@@ -495,7 +436,6 @@ export default function WorkoutDetailPage() {
               style={{ color: 'var(--muted-foreground)' }}
               className="text-xs mt-4"
             >
-              * Algumas estatísticas serão exibidas após implementar sessões
             </p>
           </Card>
         </div>
@@ -503,48 +443,3 @@ export default function WorkoutDetailPage() {
     </div>
   );
 }
-
-          {/* Botões de ação */}
-          <div className="flex gap-3">
-            <Button
-              onClick={() => router.push(`/workouts/${workout.id}/start`)}
-              className="flex-1"
-              style={{
-                background: 'var(--primary)',
-                color: 'var(--foreground)',
-                border: 'none'
-              }}
-            >
-              Iniciar Treino
-            </Button>
-            <Button
-              onClick={() => router.back()}
-              variant="outline"
-              style={{
-                borderColor: 'var(--border)',
-                color: 'var(--foreground)'
-              }}
-            >
-              Voltar
-            </Button>
-            <Button
-              onClick={() => router.push(`/workouts/${workout.id}/edit`)}
-              variant="outline"
-              style={{
-                borderColor: 'var(--border)',
-                color: 'var(--foreground)'
-              }}
-            >
-              Editar
-            </Button>
-            <Button
-              onClick={handleDeleteWorkout}
-              variant="outline"
-              style={{
-                borderColor: 'var(--destructive)',
-                color: 'var(--destructive)'
-              }}
-            >
-              Excluir
-            </Button>
-          </div>

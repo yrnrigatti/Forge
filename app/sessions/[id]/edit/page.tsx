@@ -152,7 +152,6 @@ export default function EditSessionPage() {
 
         <SessionForm
           initialData={{
-            workout_id: session.workout_id,
             status: session.status,
             notes: session.notes || ''
           }}

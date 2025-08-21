@@ -138,9 +138,9 @@ export class ExerciseService {
         .from('exercises')
         .select('*')
         .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
+        .order('name')
 
-      // Aplicar filtros validados
+      // Aplicar filtros
       if (filters?.muscleGroup) {
         query = query.eq('muscle_group', filters.muscleGroup)
       }
@@ -150,7 +150,7 @@ export class ExerciseService {
       }
 
       if (filters?.search) {
-        query = query.ilike('name', `%${filters.search.trim()}%`)
+        query = query.ilike('name', `%${filters.search}%`)
       }
 
       const { data, error } = await query
@@ -174,13 +174,22 @@ export class ExerciseService {
     }
   }
 
-  // Buscar exercício por ID
+  // Buscar exercício por ID com validação
   static async getExerciseById(id: string): Promise<Exercise | null> {
     try {
+      // Validar ID
+      const validation = ExerciseValidations.validateExerciseId(id)
+      if (!validation.isValid) {
+        throw ExerciseError.fromValidationErrors(validation.errors)
+      }
+
       const { data: { user } } = await supabase.auth.getUser()
       
       if (!user) {
-        throw new Error('Usuário não autenticado')
+        throw new ExerciseError(
+          'Usuário não autenticado',
+          ExerciseErrorCode.UNAUTHORIZED
+        )
       }
 
       const { data, error } = await supabase
@@ -194,70 +203,21 @@ export class ExerciseService {
         if (error.code === 'PGRST116') {
           return null // Exercício não encontrado
         }
-        throw new Error(`Erro ao buscar exercício: ${error.message}`)
+        throw ExerciseError.fromSupabaseError(error)
       }
 
       return data
     } catch (error) {
+      if (error instanceof ExerciseError) {
+        throw error
+      }
       console.error('Erro no serviço getExerciseById:', error)
-      throw error
-    }
-  }
-
-  // Criar novo exercício
-  static async createExercise(exerciseData: CreateExerciseData): Promise<Exercise> {
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-      
-      if (!user) {
-        throw new Error('Usuário não autenticado')
-      }
-
-      const { data, error } = await supabase
-        .from('exercises')
-        .insert({
-          ...exerciseData,
-          user_id: user.id
-        })
-        .select()
-        .single()
-
-      if (error) {
-        throw new Error(`Erro ao criar exercício: ${error.message}`)
-      }
-
-      return data
-    } catch (error) {
-      console.error('Erro no serviço createExercise:', error)
-      throw error
-    }
-  }
-
-  // Atualizar exercício existente
-  static async updateExercise(id: string, exerciseData: UpdateExerciseData): Promise<Exercise> {
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-      
-      if (!user) {
-        throw new Error('Usuário não autenticado')
-      }
-
-      const { data, error } = await supabase
-        .from('exercises')
-        .update(exerciseData)
-        .eq('id', id)
-        .eq('user_id', user.id)
-        .select()
-        .single()
-
-      if (error) {
-        throw new Error(`Erro ao atualizar exercício: ${error.message}`)
-      }
-
-      return data
-    } catch (error) {
-      console.error('Erro no serviço updateExercise:', error)
-      throw error
+      throw new ExerciseError(
+        'Erro ao buscar exercício',
+        ExerciseErrorCode.UNKNOWN_ERROR,
+        undefined,
+        error as Error
+      )
     }
   }
 
@@ -295,39 +255,61 @@ export class ExerciseService {
     return this.getExercises({ type })
   }
 
-  // Buscar exercícios por nome (busca)
+  // Buscar exercícios por nome
   static async searchExercises(search: string): Promise<Exercise[]> {
     return this.getExercises({ search })
   }
 
-  // Verificar se o usuário possui exercícios
+  // Verificar se usuário tem exercícios
   static async hasExercises(): Promise<boolean> {
     try {
-      const exercises = await this.getExercises()
-      return exercises.length > 0
+      const { data: { user } } = await supabase.auth.getUser()
+      
+      if (!user) {
+        return false
+      }
+
+      const { count } = await supabase
+        .from('exercises')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+
+      return (count || 0) > 0
     } catch (error) {
-      console.error('Erro ao verificar exercícios:', error)
+      console.error('Erro no serviço hasExercises:', error)
       return false
     }
   }
 
-  // Contar exercícios por grupo muscular
+  // Obter contagem de exercícios por grupo muscular
   static async getExerciseCountByMuscleGroup(): Promise<Record<string, number>> {
     try {
-      const exercises = await this.getExercises()
-      const counts: Record<string, number> = {}
+      const { data: { user } } = await supabase.auth.getUser()
       
-      exercises.forEach(exercise => {
+      if (!user) {
+        return {}
+      }
+
+      const { data, error } = await supabase
+        .from('exercises')
+        .select('muscle_group')
+        .eq('user_id', user.id)
+
+      if (error) {
+        throw new Error(`Erro ao contar exercícios: ${error.message}`)
+      }
+
+      const counts: Record<string, number> = {}
+      data?.forEach(exercise => {
         counts[exercise.muscle_group] = (counts[exercise.muscle_group] || 0) + 1
       })
-      
+
       return counts
     } catch (error) {
-      console.error('Erro ao contar exercícios por grupo muscular:', error)
+      console.error('Erro no serviço getExerciseCountByMuscleGroup:', error)
       return {}
     }
   }
 }
 
-// Exportar instância padrão para uso direto
 export const exerciseService = ExerciseService

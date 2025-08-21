@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { sessionService } from '@/services/sessionService'
 import { SessionWithDetails, Set } from '@/types/session'
+import { Exercise } from '@/types/exercise'
 import { SessionCard } from '@/components/sessions/SessionCard'
 import { SetForm } from '@/components/sessions/SetForm'
 import { ErrorDisplay } from '@/components/ui/ErrorDisplay'
@@ -97,7 +98,7 @@ export default function SessionDetailPage() {
     }
 
     try {
-      await sessionService.deleteSet(setId)
+      await sessionService.removeSetFromSession(setId)
       await loadSession()
     } catch (err) {
       handleError(err)
@@ -141,7 +142,7 @@ export default function SessionDetailPage() {
     return (
       <div className="min-h-screen bg-[#121212] p-4">
         <div className="container mx-auto max-w-4xl">
-          <ErrorDisplay message="Sessão não encontrada" />
+          <ErrorDisplay error="Sessão não encontrada" />
         </div>
       </div>
     )
@@ -162,7 +163,6 @@ export default function SessionDetailPage() {
         <div className="mb-6">
           <div className="flex items-center gap-4 mb-6">
             <Button
-              variant="outline"
               onClick={() => router.push('/sessions')}
               className="text-[#A3A3A3] border-[#2C2C2C] bg-[#1F1F1F] hover:bg-[#2C2C2C] hover:text-[#E5E5E5]"
             >
@@ -180,7 +180,7 @@ export default function SessionDetailPage() {
         {/* Error Display */}
         {error && (
           <div className="mb-6">
-            <ErrorDisplay message={error} />
+            <ErrorDisplay error={error} />
           </div>
         )}
 
@@ -203,7 +203,6 @@ export default function SessionDetailPage() {
             </Button>
             <Button
               onClick={handleCompleteSession}
-              variant="outline"
               className="border-[#FF6B35] text-[#FF6B35] bg-transparent hover:bg-[#FF6B35] hover:text-white font-medium px-6 py-2 rounded-lg"
             >
               Finalizar Sessão
@@ -257,7 +256,6 @@ export default function SessionDetailPage() {
                               <>
                                 <Button
                                   size="sm"
-                                  variant="outline"
                                   onClick={() => handleEditSet(set)}
                                   className="text-xs px-3 py-1 text-[#FF6B35] border-[#FF6B35] bg-transparent hover:bg-[#FF6B35] hover:text-white rounded"
                                 >
@@ -265,7 +263,6 @@ export default function SessionDetailPage() {
                                 </Button>
                                 <Button
                                   size="sm"
-                                  variant="outline"
                                   onClick={() => handleDeleteSet(set.id)}
                                   className="text-xs px-3 py-1 text-[#FF3D00] border-[#FF3D00] bg-transparent hover:bg-[#FF3D00] hover:text-white rounded"
                                 >
@@ -303,7 +300,7 @@ export default function SessionDetailPage() {
           <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
             <div className="bg-[#1F1F1F] border border-[#2C2C2C] rounded-lg p-6 w-full max-w-md">
               <SetForm
-                exercise={session.workout?.exercises?.find(we => we.exercise.id === selectedExerciseId)?.exercise}
+                exercise={session.workout?.exercises?.find(we => we.exercise.id === selectedExerciseId)?.exercise as Exercise}
                 onSubmit={handleSetSubmit}
                 onCancel={() => {
                   setShowAddSetForm(false)

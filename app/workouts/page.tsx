@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { workoutService } from '@/services/workoutService'
 import { sessionService } from '@/services/sessionService'
-import { WorkoutWithExercises, WorkoutFilters, WorkoutSortBy } from '@/types/workout'
+import { WorkoutWithExercises, WorkoutFilters, WorkoutSortOption } from '@/types/workout'
 import { SessionWithDetails } from '@/types/session'
 import { WorkoutList } from '@/components/workouts/WorkoutList'
 import { ErrorDisplay } from '@/components/ui/ErrorDisplay'
@@ -29,7 +29,6 @@ export default function WorkoutsPage() {
     sortOrder: 'desc'
   })
 
-  // Função para carregar treinos
   const loadWorkouts = async (currentFilters = filters) => {
     if (!user) return
     
@@ -45,7 +44,6 @@ export default function WorkoutsPage() {
     }
   }
 
-  // Função para carregar sessões ativas
   const loadActiveSessions = async () => {
     if (!user) return
     
@@ -60,7 +58,6 @@ export default function WorkoutsPage() {
     }
   }
 
-  // Proteção de rota no cliente
   useEffect(() => {
     if (!authLoading && !user) {
       router.push('/auth/login?redirectTo=/workouts')
@@ -68,23 +65,19 @@ export default function WorkoutsPage() {
     }
   }, [user, authLoading, router])
 
-  // Carregar treinos quando os filtros mudarem (com debounce para busca)
   useEffect(() => {
     if (!user) return
 
-    // Limpar timer anterior
     if (searchDebounceTimer) {
       clearTimeout(searchDebounceTimer)
     }
 
-    // Se há busca por texto, aplicar debounce
     if (filters.search) {
       const timer = setTimeout(() => {
         loadWorkouts(filters)
-      }, 300) // 300ms de debounce
+      }, 300)
       setSearchDebounceTimer(timer)
     } else {
-      // Para outros filtros, aplicar imediatamente
       loadWorkouts(filters)
     }
 
@@ -95,7 +88,6 @@ export default function WorkoutsPage() {
     }
   }, [filters, user])
 
-  // Carregar treinos inicialmente
   useEffect(() => {
     if (user) {
       loadWorkouts()
@@ -128,21 +120,13 @@ export default function WorkoutsPage() {
     })
   }
 
-  // Remove these duplicate lines (lines 132-150):
-  // import { sessionService } from '@/services/sessionService'
-  // import { SessionWithDetails } from '@/types/session'
-  // const [activeSessions, setActiveSessions] = useState<SessionWithDetails[]>([])
-  // const loadActiveSessions = async () => { ... }
-
-  // Chamar no useEffect
   useEffect(() => {
     if (user) {
       loadWorkouts()
       loadActiveSessions()
     }
-  }, [user]) // Remove 'filters' and 'sortBy' from dependencies since this should only run when user changes
+  }, [user])
   
-  // Adicionar seção de sessões ativas antes da lista de treinos
   {activeSessions.length > 0 && (
     <Card className="p-6 mb-6" style={{ borderColor: 'var(--primary)' }}>
       <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--foreground)' }}>
@@ -195,9 +179,7 @@ export default function WorkoutsPage() {
   return (
     <div className="min-h-screen" style={{ background: 'var(--background)' }}>
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
         <div className="mb-6">
-          {/* Linha superior: botão voltar + título */}
           <div className="flex items-center gap-3 mb-3">
             <button
               onClick={() => router.push('/')}
@@ -225,7 +207,6 @@ export default function WorkoutsPage() {
             </div>
           </div>
           
-          {/* Linha inferior: botão novo treino (centralizado no mobile) */}
           <div className="flex justify-center sm:justify-end">
             <button
               onClick={() => router.push('/workouts/new')}
@@ -242,11 +223,9 @@ export default function WorkoutsPage() {
           </div>
         </div>
 
-        {/* Filtros */}
         <div className="mb-6">
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
             <div className="flex flex-col sm:flex-row gap-4 flex-1">
-              {/* Busca */}
               <div className="flex-1 max-w-md">
                 <Input
                   type="text"
@@ -257,11 +236,10 @@ export default function WorkoutsPage() {
                 />
               </div>
               
-              {/* Ordenação */}
               <div className="flex gap-2">
                 <select
                   value={filters.sortBy}
-                  onChange={(e) => updateFilter('sortBy', e.target.value as WorkoutSortBy)}
+                  onChange={(e) => updateFilter('sortBy', e.target.value as WorkoutSortOption)}
                   className="px-3 py-2 rounded-lg border"
                   style={{
                     background: 'var(--card)',
@@ -289,7 +267,6 @@ export default function WorkoutsPage() {
               </div>
             </div>
             
-            {/* Limpar filtros */}
             {(filters.search || filters.sortBy !== 'created_at' || filters.sortOrder !== 'desc') && (
               <Button
                 onClick={clearFilters}
@@ -305,7 +282,6 @@ export default function WorkoutsPage() {
             )}
           </div>
           
-          {/* Contador de resultados */}
           <div className="mt-2">
             <p className="text-sm" style={{ color: 'var(--muted-foreground)' }}>
               {loading ? 'Carregando...' : `${workouts.length} treino${workouts.length !== 1 ? 's' : ''} encontrado${workouts.length !== 1 ? 's' : ''}`}
@@ -313,7 +289,6 @@ export default function WorkoutsPage() {
           </div>
         </div>
 
-        {/* Exibição de erros */}
         {error && (
           <ErrorDisplay
             error={error}
@@ -321,7 +296,6 @@ export default function WorkoutsPage() {
           />
         )}
 
-        {/* Lista de treinos */}
         <WorkoutList
           workouts={workouts}
           loading={loading}

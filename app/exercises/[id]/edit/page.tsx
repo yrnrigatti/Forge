@@ -217,8 +217,7 @@ export default function EditExercisePage() {
               style={{
                 backgroundColor: 'var(--input)',
                 color: 'var(--foreground)',
-                border: '1px solid var(--border)',
-                focusRingColor: 'var(--ring)'
+                border: '1px solid var(--border)'
               }}
             >
               <option value="">Selecione um grupo muscular</option>
@@ -246,7 +245,6 @@ export default function EditExercisePage() {
                 backgroundColor: 'var(--input)',
                 color: 'var(--foreground)',
                 border: '1px solid var(--border)',
-                focusRingColor: 'var(--ring)'
               }}
             >
               <option value="">Selecione um tipo</option>
@@ -276,7 +274,6 @@ export default function EditExercisePage() {
                 backgroundColor: 'var(--input)',
                 color: 'var(--foreground)',
                 border: '1px solid var(--border)',
-                focusRingColor: 'var(--ring)'
               }}
             />
           </div>

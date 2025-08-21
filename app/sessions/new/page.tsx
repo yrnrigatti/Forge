@@ -95,7 +95,7 @@ export default function NewSessionPage() {
       {/* Error Display */}
       {error && (
         <div className="mb-6">
-          <ErrorDisplay message={error} />
+          <ErrorDisplay error={error} />
         </div>
       )}
 

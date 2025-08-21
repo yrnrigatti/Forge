@@ -62,11 +62,11 @@ export default function HistoryPage() {
       // Carregar sessões do período
       const sessionsData = await sessionService.getSessions(
         {
-          status: 'completed',
-          startDate: dateRange.startDate,
-          endDate: dateRange.endDate
+          completed: true,
+          date_from: dateRange.startDate,
+          date_to: dateRange.endDate
         },
-        'created_at_desc'
+        'date_desc'
       )
       setSessions(sessionsData)
       
@@ -94,11 +94,6 @@ export default function HistoryPage() {
     
     sessionsData.forEach(session => {
       if (session.workout_id) workoutIds.add(session.workout_id)
-      
-      if (session.started_at && session.completed_at) {
-        const duration = new Date(session.completed_at).getTime() - new Date(session.started_at).getTime()
-        totalDuration += duration
-      }
       
       session.sets?.forEach(set => {
         totalSets++
@@ -290,7 +285,6 @@ export default function HistoryPage() {
                   startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
                   endDate: new Date().toISOString().split('T')[0]
                 })}
-                variant="outline"
                 className="w-full sm:w-auto whitespace-nowrap"
                 style={{
                   borderColor: 'var(--border)',
@@ -443,16 +437,11 @@ export default function HistoryPage() {
                     <div className="text-sm" style={{ color: 'var(--muted-foreground)' }}>
                       {new Date(session.created_at).toLocaleDateString('pt-BR')} • 
                       {session.sets?.length || 0} sets
-                      {session.started_at && session.completed_at && (
-                        <> • {formatDuration(
-                          new Date(session.completed_at).getTime() - new Date(session.started_at).getTime()
-                        )}</>
-                      )}
                       {session.started_at && session.ended_at && (
-                        <span className="text-xs text-gray-400 ml-2">
+                        <span className="text-sm text-gray-500">
                           {Math.round(
                             (new Date(session.ended_at).getTime() - new Date(session.started_at).getTime()) / (1000 * 60)
-                          )}min
+                          )} min
                         </span>
                       )}
                     </div>
@@ -476,7 +465,6 @@ export default function HistoryPage() {
                 <div className="text-center pt-4">
                   <Button
                     onClick={() => router.push('/sessions')}
-                    variant="outline"
                   >
                     Ver Todas as Sessões
                   </Button>

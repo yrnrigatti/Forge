@@ -7,13 +7,15 @@ interface ErrorDisplayProps {
   validationErrors?: ValidationError[]
   className?: string
   showDetails?: boolean
+  onRetry?: () => void
 }
 
 export function ErrorDisplay({ 
   error, 
   validationErrors, 
   className = '', 
-  showDetails = false 
+  showDetails = false,
+  onRetry
 }: ErrorDisplayProps) {
   if (!error && (!validationErrors || validationErrors.length === 0)) {
     return null
@@ -81,6 +83,15 @@ export function ErrorDisplay({
                 {error.originalError.message}
               </pre>
             </details>
+          )}
+          
+          {onRetry && (
+            <button
+              onClick={onRetry}
+              className="mt-3 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 text-sm"
+            >
+              Tentar Novamente
+            </button>
           )}
         </div>
       </div>

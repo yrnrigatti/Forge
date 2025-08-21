@@ -51,7 +51,7 @@ export function ExerciseForm({
 
   const handleChange = (field: keyof CreateExerciseData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    if (error) setError(null); // Limpa erro ao digitar
+    if (error) setError(null);
   };
 
   return (
@@ -63,7 +63,6 @@ export function ExerciseForm({
           </div>
         )}
 
-        {/* Nome do Exercício */}
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
             Nome do Exercício *
@@ -79,7 +78,6 @@ export function ExerciseForm({
           />
         </div>
 
-        {/* Grupo Muscular */}
         <div>
           <label htmlFor="muscle_group" className="block text-sm font-medium text-gray-700 mb-2">
             Grupo Muscular
@@ -98,7 +96,6 @@ export function ExerciseForm({
           </select>
         </div>
 
-        {/* Tipo de Exercício */}
         <div>
           <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-2">
             Tipo de Exercício
@@ -117,7 +114,6 @@ export function ExerciseForm({
           </select>
         </div>
 
-        {/* Notas */}
         <div>
           <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-2">
             Notas/Observações
@@ -133,12 +129,11 @@ export function ExerciseForm({
           />
         </div>
 
-        {/* Botões */}
         <div className="flex space-x-4">
           {onCancel && (
             <Button
               type="button"
-              variant="outline"
+              variant="secondary"
               onClick={onCancel}
               disabled={isLoading}
               className="flex-1"

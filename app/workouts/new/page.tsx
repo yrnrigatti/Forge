@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { workoutService } from '@/services/workoutService'
-import { CreateWorkoutData } from '@/types/workout'
+import { CreateWorkoutData, UpdateWorkoutData } from '@/types/workout'
 import { WorkoutForm } from '@/components/workouts/WorkoutForm'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -17,9 +17,15 @@ export default function NewWorkoutPage() {
   const { error, handleError, clearErrors } = useErrorHandler()
   const router = useRouter()
 
-  const handleSubmit = async (data: CreateWorkoutData) => {
+  const handleSubmit = async (data: CreateWorkoutData | UpdateWorkoutData) => {
     if (!user) {
       handleError(new Error('Usuário não autenticado'))
+      return
+    }
+
+    // Validar se name está presente (necessário para criação)
+    if (!data.name) {
+      handleError(new Error('Nome do treino é obrigatório'))
       return
     }
 
@@ -27,7 +33,13 @@ export default function NewWorkoutPage() {
       setLoading(true)
       clearErrors()
       
-      const workout = await workoutService.createWorkout(data)
+      // Garantir que temos os dados necessários para criação
+      const createData: CreateWorkoutData = {
+        name: data.name,
+        exercise_ids: 'exercise_ids' in data ? data.exercise_ids : undefined
+      }
+      
+      const workout = await workoutService.createWorkout(createData)
       
       // Redirecionar para a página de detalhes do treino criado
       router.push(`/workouts/${workout.id}`)

@@ -245,15 +245,14 @@ export default function SessionsPage() {
         {/* Error Display */}
         {error && (
           <div className="mb-6">
-            <ErrorDisplay message={error} />
+            <ErrorDisplay error={error} />
           </div>
         )}
 
-        {/* Lista de sessões */}
         <SessionList
           sessions={sessions}
           loading={loading}
-          error={error}
+          error={error?.getUserFriendlyMessage() || null}
           onSessionClick={handleSessionClick}
           onSessionEdit={handleSessionEdit}
           onSessionDelete={handleSessionDelete}

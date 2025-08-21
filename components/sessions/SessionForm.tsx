@@ -6,24 +6,37 @@ import { Card } from '@/components/ui/card'
 import { useWorkouts } from '@/hooks/useWorkouts'
 
 interface SessionFormProps {
-  initialData?: Partial<CreateSessionData | UpdateSessionData>
-  onSubmit: (data: CreateSessionData | UpdateSessionData) => Promise<void>
+  initialData?: Partial<CreateSessionData>
+  onSubmit: (data: CreateSessionData) => Promise<void>
   onCancel?: () => void
   submitLabel?: string
   isLoading?: boolean
-  isUpdate?: boolean
+  isUpdate?: false
 }
 
-export function SessionForm({
-  initialData = {},
-  onSubmit,
-  onCancel,
-  submitLabel = 'Criar Sessão',
-  isLoading = false,
-  isUpdate = false
-}: SessionFormProps) {
+interface SessionFormUpdateProps {
+  initialData?: Partial<UpdateSessionData>
+  onSubmit: (data: UpdateSessionData) => Promise<void>
+  onCancel?: () => void
+  submitLabel?: string
+  isLoading?: boolean
+  isUpdate: true
+}
+
+type SessionFormAllProps = SessionFormProps | SessionFormUpdateProps
+
+export function SessionForm(props: SessionFormAllProps) {
+  const {
+    initialData = {},
+    onSubmit,
+    onCancel,
+    submitLabel = 'Criar Sessão',
+    isLoading = false,
+    isUpdate = false
+  } = props
+
   const [formData, setFormData] = useState({
-    workout_id: initialData.workout_id || '',
+    workout_id: (initialData as any).workout_id || '',
     status: initialData.status || 'active',
     notes: initialData.notes || ''
   })
@@ -38,7 +51,7 @@ export function SessionForm({
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
 
-    if (!formData.workout_id) {
+    if (!isUpdate && !formData.workout_id) {
       newErrors.workout_id = 'Selecione um treino'
     }
 
@@ -58,7 +71,14 @@ export function SessionForm({
     }
 
     try {
-      await onSubmit(formData)
+      if (isUpdate) {
+        // Para updates, não incluir workout_id
+        const { workout_id, ...updateData } = formData
+        await (onSubmit as (data: UpdateSessionData) => Promise<void>)(updateData as UpdateSessionData)
+      } else {
+        // Para criação, workout_id é obrigatório
+        await (onSubmit as (data: CreateSessionData) => Promise<void>)(formData as CreateSessionData)
+      }
     } catch (error) {
       console.error('Erro ao salvar sessão:', error)
     }

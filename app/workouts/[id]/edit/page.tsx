@@ -187,32 +187,6 @@ export default function EditWorkoutPage() {
             />
           </div>
 
-          {/* Descrição */}
-          <div>
-            <label 
-              htmlFor="description" 
-              className="block text-sm font-medium mb-2"
-              style={{ color: 'var(--foreground)' }}
-            >
-              Descrição
-            </label>
-            <textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => handleChange('description', e.target.value)}
-              placeholder="Descreva o objetivo do treino, observações, etc..."
-              rows={4}
-              className="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2"
-              style={{
-                backgroundColor: 'var(--input)',
-                color: 'var(--foreground)',
-                border: '1px solid var(--border)',
-                focusRingColor: 'var(--ring)'
-              }}
-            />
-          </div>
-
-          {/* Botões */}
           <div className="flex space-x-4">
             <Button
               type="button"

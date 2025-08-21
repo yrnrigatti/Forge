@@ -79,7 +79,7 @@ export class WorkoutService {
       // Processar dados para incluir contagem de exercícios e ordenação
       const workoutsWithExercises: WorkoutWithExercises[] = (data || []).map(workout => {
         const sortedExercises = (workout.workout_exercises || [])
-          .sort((a, b) => (a.order || 0) - (b.order || 0))
+          .sort((a: WorkoutExercise, b: WorkoutExercise) => (a.order || 0) - (b.order || 0))
         
         return {
           ...workout,
@@ -137,7 +137,8 @@ export class WorkoutService {
       }
 
       const sortedExercises = (data.workout_exercises || [])
-        .sort((a, b) => (a.order || 0) - (b.order || 0))
+        .sort((a: WorkoutExercise, b: WorkoutExercise) => (a.order || 0) - (b.order || 0))
+
 
       return {
         ...data,
@@ -341,7 +342,7 @@ export class WorkoutService {
         .eq('id', workoutExerciseId)
         .single()
 
-      if (!workoutExercise || workoutExercise.workout.user_id !== user.id) {
+      if (!workoutExercise || !workoutExercise.workout || workoutExercise.workout[0]?.user_id !== user.id) {
         throw new Error('Exercício do treino não encontrado')
       }
 

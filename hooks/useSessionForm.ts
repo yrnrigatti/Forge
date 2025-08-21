@@ -35,7 +35,6 @@ export function useSessionForm(
 
   const addSet = useCallback((exerciseId: string) => {
     const newSet: CreateSetData = {
-      session_id: '', // Será preenchido quando a sessão for criada
       exercise_id: exerciseId,
       weight: 0,
       reps: 0,
@@ -58,7 +57,7 @@ export function useSessionForm(
     const errors: string[] = []
 
     // Validar dados da sessão
-    if (!sessionData.workout_id) {
+    if ('workout_id' in sessionData && !sessionData.workout_id) {
       errors.push('workout_id: Treino é obrigatório')
     }
 

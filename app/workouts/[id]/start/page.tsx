@@ -56,7 +56,9 @@ export default function StartWorkoutPage() {
           notes: ''
         }
         const newSession = await sessionService.createSession(newSessionData)
-        setSession(newSession)
+        // Buscar a sessão completa com todos os detalhes
+        const sessionWithDetails = await sessionService.getSessionById(newSession.id)
+        setSession(sessionWithDetails)
         
         // Atualizar URL com o sessionId
         router.replace(`/workouts/${workoutId}/start?sessionId=${newSession.id}`)
@@ -151,7 +153,7 @@ export default function StartWorkoutPage() {
   if (!workout || !session) {
     return (
       <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <ErrorDisplay message="Treino não encontrado" />
+        <ErrorDisplay error="Treino não encontrado" />
       </div>
     )
   }
@@ -159,6 +161,15 @@ export default function StartWorkoutPage() {
   // Verificar se há exercícios antes de acessar
   const currentExercise = workout?.workout_exercises?.[currentExerciseIndex]
   const exerciseSets = session.sets?.filter(set => set.exercise_id === currentExercise?.exercise?.id) || []
+
+  // Adicionar verificação para currentExercise
+  if (!currentExercise || !currentExercise.exercise) {
+    return (
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        <ErrorDisplay error="Exercício não encontrado" />
+      </div>
+    )
+  }
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -183,7 +194,7 @@ export default function StartWorkoutPage() {
       {/* Error Display */}
       {error && (
         <div className="mb-6">
-          <ErrorDisplay message={error} />
+          <ErrorDisplay error={error} />
         </div>
       )}
 
@@ -212,14 +223,8 @@ export default function StartWorkoutPage() {
           <p className="text-[#A3A3A3]">
             {currentExercise.exercise.muscle_group} • {currentExercise.exercise.type}
           </p>
-          {currentExercise.exercise.instructions && (
-            <p className="text-sm text-[#A3A3A3] mt-2">
-              {currentExercise.exercise.instructions}
-            </p>
-          )}
         </CardHeader>
         <CardContent>
-          {/* Sets realizados */}
           {exerciseSets.length > 0 && (
             <div className="mb-4">
               <h4 className="text-sm font-medium text-[#E5E5E5] mb-2">Séries realizadas:</h4>
@@ -243,7 +248,7 @@ export default function StartWorkoutPage() {
           {/* Botão para adicionar série */}
           <Button
             variant="primary"
-            onClick={() => handleAddSet(currentExercise.exercise.id)}
+            onClick={() => handleAddSet(currentExercise.exercise!.id)}
             className="w-full"
           >
             Adicionar Série

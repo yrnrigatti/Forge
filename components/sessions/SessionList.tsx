@@ -1,11 +1,12 @@
 import { SessionWithDetails } from '@/types/session'
 import { SessionCard } from './SessionCard'
 import { ErrorDisplay } from '@/components/ui/ErrorDisplay'
+import { ExerciseError } from '@/lib/errors/exerciseErrors'
 
 interface SessionListProps {
   sessions: SessionWithDetails[]
   loading?: boolean
-  error?: string | null
+  error?: ExerciseError | string | null
   onSessionClick?: (session: SessionWithDetails) => void
   onSessionEdit?: (session: SessionWithDetails) => void
   onSessionDelete?: (session: SessionWithDetails) => void
@@ -43,7 +44,7 @@ export function SessionList({
   if (error) {
     return (
       <div className={className}>
-        <ErrorDisplay message={error} />
+        <ErrorDisplay error={error} />
       </div>
     )
   }
