@@ -19,6 +19,11 @@ interface MenuItem {
   icon: React.ComponentType<{ className?: string }>
 }
 
+interface SidebarProps {
+  isMobileMenuOpen?: boolean
+  onCloseMobileMenu?: () => void
+}
+
 const menuItems: MenuItem[] = [
   { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
   { name: 'Exercícios', href: '/exercises', icon: CogIcon },
@@ -27,14 +32,30 @@ const menuItems: MenuItem[] = [
   { name: 'Histórico', href: '/history', icon: ChartBarIcon },
 ]
 
-export function Sidebar() {
+export function Sidebar({ isMobileMenuOpen = false, onCloseMobileMenu }: SidebarProps) {
   const pathname = usePathname()
   const { user, signOut } = useAuth()
 
   if (!user) return null
 
+  const handleLinkClick = () => {
+    // Fecha o menu mobile quando um link é clicado
+    if (onCloseMobileMenu) {
+      onCloseMobileMenu()
+    }
+  }
+
   return (
-    <div className="fixed left-0 top-0 h-full w-64 bg-[#1F1F1F] border-r border-[#2C2C2C] flex flex-col">
+    <div className={`
+      fixed left-0 top-0 h-full w-64 bg-[#1F1F1F] border-r border-[#2C2C2C] flex flex-col z-40
+      transform transition-transform duration-300 ease-in-out
+      lg:translate-x-0
+      ${
+        isMobileMenuOpen 
+          ? 'translate-x-0' 
+          : '-translate-x-full lg:translate-x-0'
+      }
+    `}>
       {/* Header */}
       <div className="p-6 border-b border-[#2C2C2C]">
         <h1 className="text-2xl font-bold text-[#FF6B35]">
@@ -56,6 +77,7 @@ export function Sidebar() {
               <li key={item.href}>
                 <Link
                   href={item.href}
+                  onClick={handleLinkClick}
                   className={`
                     flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
                     ${

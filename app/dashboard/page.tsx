@@ -7,6 +7,7 @@ import { SessionService } from '@/services/sessionService'
 import { SessionStats, ExerciseStats } from '@/types/session'
 import { ProtectedRoute } from '@/components/layout/ProtectedRoute'
 import { ErrorDisplay } from '@/components/ui/ErrorDisplay'
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { DashboardStats, ProgressChart, WorkoutFrequencyChart, ExerciseProgressTable, RecentSessions } from '@/components/dashboard'
 
@@ -47,9 +48,7 @@ export default function DashboardPage() {
   if (loading || isLoading) {
     return (
       <div className="min-h-screen bg-[#121212] flex items-center justify-center">
-        <div className="text-[#FF6B35] text-lg font-medium">
-          Carregando dashboard...
-        </div>
+        <LoadingSpinner size="xl" text="Carregando dashboard..." />
       </div>
     )
   }

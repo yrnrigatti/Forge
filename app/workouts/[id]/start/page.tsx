@@ -14,6 +14,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { useErrorHandler } from '@/hooks/useErrorHandler'
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 
 export default function StartWorkoutPage() {
   const router = useRouter()
@@ -141,7 +142,7 @@ export default function StartWorkoutPage() {
   if (authLoading || loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+        <LoadingSpinner size="xl" text="Carregando treino..." />
       </div>
     )
   }

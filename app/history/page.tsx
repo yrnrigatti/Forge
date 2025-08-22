@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { ErrorDisplay } from '@/components/ui/ErrorDisplay'
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 
 interface SessionStats {
   totalSessions: number
@@ -173,10 +174,7 @@ export default function HistoryPage() {
   if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p style={{ color: 'var(--muted-foreground)' }}>Carregando histórico...</p>
-        </div>
+        <LoadingSpinner size="lg" text="Carregando histórico..." />
       </div>
     )
   }

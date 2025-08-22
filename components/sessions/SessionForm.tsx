@@ -3,6 +3,7 @@ import { CreateSessionData, UpdateSessionData } from '@/types/session'
 import { WorkoutWithExercises } from '@/types/workout'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { useWorkouts } from '@/hooks/useWorkouts'
 
 interface SessionFormProps {
@@ -111,15 +112,8 @@ export function SessionForm(props: SessionFormAllProps) {
             Treino *
           </label>
           {workoutsLoading ? (
-            <div 
-              className="w-full px-4 py-3 rounded-lg text-sm"
-              style={{
-                background: 'var(--card)',
-                border: '1px solid var(--border)',
-                color: 'var(--secondary)'
-              }}
-            >
-              Carregando treinos...
+            <div className="flex items-center justify-center py-3">
+              <LoadingSpinner size="sm" text="Carregando treinos..." />
             </div>
           ) : (
             <select

@@ -14,6 +14,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { useErrorHandler } from '@/hooks/useErrorHandler'
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 
 export default function SessionDetailPage() {
   const router = useRouter()
@@ -128,8 +129,8 @@ export default function SessionDetailPage() {
   // Loading state
   if (authLoading || loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-[#121212]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF6B35]"></div>
+      <div className="flex justify-center items-center min-h-screen">
+        <LoadingSpinner size="lg" text="Carregando sessão..." />
       </div>
     )
   }

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { SessionStats } from '@/types/session'
 import { SessionService } from '@/services/sessionService'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 
 interface WorkoutFrequencyChartProps {
   stats: SessionStats | null
@@ -154,8 +155,8 @@ export function WorkoutFrequencyChart({ stats }: WorkoutFrequencyChartProps) {
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <div className="h-64 flex items-center justify-center">
-            <div className="text-[#A3A3A3]">Carregando frequência...</div>
+          <div className="flex justify-center py-8">
+            <LoadingSpinner size="md" text="Carregando frequência..." />
           </div>
         ) : (
           <div className="space-y-4">

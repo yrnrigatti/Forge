@@ -13,6 +13,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 
 export default function WorkoutsPage() {
   const router = useRouter()
@@ -166,7 +167,7 @@ export default function WorkoutsPage() {
   if (authLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+        <LoadingSpinner size="xl" text="Carregando..." />
       </div>
     )
   }

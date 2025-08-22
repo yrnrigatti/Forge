@@ -11,6 +11,7 @@ import { ErrorDisplay } from '@/components/ui/ErrorDisplay'
 import { useErrorHandler } from '@/hooks/useErrorHandler'
 import { useExerciseFilters } from '@/hooks/useExerciseFilters'
 import { useAuth } from '@/hooks/useAuth'
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 
 export default function ExercisesPage() {
   const router = useRouter()
@@ -100,7 +101,7 @@ export default function ExercisesPage() {
   if (authLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+        <LoadingSpinner size="xl" text="Carregando..." />
       </div>
     )
   }
@@ -172,9 +173,8 @@ export default function ExercisesPage() {
 
         {/* Loading */}
         {loading && (
-          <div className="flex justify-center items-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: 'var(--primary)' }}></div>
-            <span className="ml-2" style={{ color: 'var(--secondary)' }}>Carregando exercícios...</span>
+          <div className="flex items-center justify-center py-8">
+            <LoadingSpinner size="md" text="Carregando exercícios..." />
           </div>
         )}
 

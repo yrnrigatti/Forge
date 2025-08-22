@@ -12,6 +12,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { exerciseService } from '@/services/exerciseService';
 import { workoutService } from '@/services/workoutService';
 import { MUSCLE_GROUPS } from '@/types/exercise';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 
 export default function AddExercisesToWorkoutPage() {
   const [workout, setWorkout] = useState<Workout | null>(null);
@@ -116,9 +117,9 @@ export default function AddExercisesToWorkoutPage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#FF6B35]"></div>
+        <LoadingSpinner size="xl" text="Carregando..." />
       </div>
-    );
+    )
   }
 
   if (error || !workout) {
