@@ -59,10 +59,9 @@ export default function HistoryPage() {
       setLoading(true)
       clearErrors()
       
-      // Carregar sessões do período
       const sessionsData = await sessionService.getSessions(
         {
-          completed: true,
+          status: 'completed', 
           date_from: dateRange.startDate,
           date_to: dateRange.endDate
         },
@@ -70,7 +69,6 @@ export default function HistoryPage() {
       )
       setSessions(sessionsData)
       
-      // Calcular estatísticas
       const statsData = await calculateStats(sessionsData)
       setStats(statsData)
       
@@ -81,7 +79,6 @@ export default function HistoryPage() {
     }
   }
 
-  // Calcular estatísticas
   const calculateStats = async (sessionsData: SessionWithDetails[]): Promise<SessionStats> => {
     const totalSessions = sessionsData.length
     const completedSessions = sessionsData.filter(s => s.status === 'completed').length
@@ -110,7 +107,11 @@ export default function HistoryPage() {
       .sort((a, b) => b.count - a.count)
       .slice(0, 5)
     
-    // Progresso semanal (últimas 4 semanas)
+    const allCompletedSessions = await sessionService.getSessions(
+      { status: 'completed' },
+      'date_desc'
+    )
+    
     const weeklyProgress = []
     for (let i = 3; i >= 0; i--) {
       const weekStart = new Date()
@@ -121,8 +122,8 @@ export default function HistoryPage() {
       weekEnd.setDate(weekEnd.getDate() + 6)
       weekEnd.setHours(23, 59, 59, 999)
       
-      const weekSessions = sessionsData.filter(session => {
-        const sessionDate = new Date(session.created_at)
+      const weekSessions = allCompletedSessions.filter(session => {
+        const sessionDate = new Date(session.date) 
         return sessionDate >= weekStart && sessionDate <= weekEnd
       })
       
@@ -185,9 +186,7 @@ export default function HistoryPage() {
   return (
     <div className="min-h-screen" style={{ background: 'var(--background)' }}>
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
         <div className="mb-6">
-          {/* Linha superior: botão voltar + título */}
           <div className="flex items-center gap-3 mb-3">
             <button
               onClick={() => router.back()}
@@ -216,34 +215,6 @@ export default function HistoryPage() {
           </div>
         </div>
         
-        {/* REMOVER ESTE BLOCO INTEIRO - Header duplicado */}
-        {/* 
-        <div className="mb-8">
-          <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
-            <div className="min-w-0 flex-1">
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold truncate" style={{ color: 'var(--foreground)' }}>
-                Histórico de Treinos
-              </h1>
-              <p className="text-sm sm:text-base lg:text-lg truncate" style={{ color: 'var(--muted-foreground)' }}>
-                Acompanhe seu progresso e estatísticas
-              </p>
-            </div>
-            <Button
-              onClick={() => router.back()}
-              variant="outline"
-              className="w-full sm:w-auto max-w-xs sm:max-w-none"
-              style={{
-                borderColor: 'var(--border)',
-                color: 'var(--foreground)'
-              }}
-            >
-              Voltar
-            </Button>
-          </div>
-        </div>
-        */}
-
-        {/* Filtros de Data */}
         <Card className="p-4 sm:p-6 mb-6" style={{ 
           backgroundColor: 'var(--card)',
           border: '1px solid var(--border)'
@@ -252,7 +223,6 @@ export default function HistoryPage() {
             Período de Análise
           </h3>
           <div className="flex flex-col gap-4">
-            {/* Inputs de Data */}
             <div className="flex flex-col gap-4 sm:flex-row sm:gap-4">
               <div className="flex-1 min-w-0">
                 <label className="block text-sm font-medium mb-1" style={{ color: 'var(--muted-foreground)' }}>
@@ -278,7 +248,6 @@ export default function HistoryPage() {
               </div>
             </div>
             
-            {/* Botões */}
             <div className="flex flex-col gap-2 sm:flex-row sm:gap-2 sm:justify-end">
               <Button
                 onClick={() => setDateRange({
@@ -307,12 +276,10 @@ export default function HistoryPage() {
           </div>
         </Card>
 
-        {/* Exibição de erros */}
         {error && (
           <ErrorDisplay error={error} className="mb-6" />
         )}
 
-        {/* Estatísticas Gerais */}
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <Card className="p-6 text-center">
@@ -354,7 +321,6 @@ export default function HistoryPage() {
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Exercícios Mais Usados */}
           {stats && stats.mostUsedExercises.length > 0 && (
             <Card className="p-6">
               <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--foreground)' }}>
@@ -384,7 +350,6 @@ export default function HistoryPage() {
             </Card>
           )}
 
-          {/* Progresso Semanal */}
           {stats && stats.weeklyProgress.length > 0 && (
             <Card className="p-6">
               <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--foreground)' }}>
@@ -409,7 +374,6 @@ export default function HistoryPage() {
           )}
         </div>
 
-        {/* Lista de Sessões */}
         <Card className="p-6 mt-6">
           <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--foreground)' }}>
             Sessões Recentes ({sessions.length})
@@ -435,11 +399,11 @@ export default function HistoryPage() {
                       {session.workout?.name || 'Treino'}
                     </div>
                     <div className="text-sm" style={{ color: 'var(--muted-foreground)' }}>
-                      {new Date(session.created_at).toLocaleDateString('pt-BR')} • 
+                      {new Date(session.date).toLocaleDateString('pt-BR')} • 
                       {session.sets?.length || 0} sets
                       {session.started_at && session.ended_at && (
-                        <span className="text-sm text-gray-500">
-                          {Math.round(
+                        <span className="text-sm text-gray-500 ml-2">
+                          • {Math.round(
                             (new Date(session.ended_at).getTime() - new Date(session.started_at).getTime()) / (1000 * 60)
                           )} min
                         </span>

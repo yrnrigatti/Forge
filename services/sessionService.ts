@@ -61,6 +61,10 @@ export class SessionService {
       if (filters.completed !== undefined) {
         query = query.eq('completed', filters.completed)
       }
+      
+      if (filters.status) {
+        query = query.eq('status', filters.status)
+      }
 
       if (filters.search) {
         query = query.or(`notes.ilike.%${filters.search}%,workout.name.ilike.%${filters.search}%`)
@@ -208,7 +212,7 @@ export class SessionService {
       const { data, error } = await supabase
         .from('sessions')
         .insert({
-          user_id: user.id, // user_id é adicionado automaticamente aqui
+          user_id: user.id, 
           workout_id: sessionData.workout_id,
           date: sessionData.date || new Date().toISOString(),
           notes: sessionData.notes,
