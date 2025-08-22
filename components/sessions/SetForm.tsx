@@ -35,11 +35,14 @@ export function SetForm({
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
 
-    if (formData.weight < 0) {
+    const weightValue = typeof formData.weight === 'string' ? parseFloat(formData.weight) : formData.weight
+    const repsValue = typeof formData.reps === 'string' ? parseInt(formData.reps) : formData.reps
+
+    if (isNaN(weightValue) || weightValue < 0) {
       newErrors.weight = 'Peso deve ser maior ou igual a 0'
     }
 
-    if (formData.reps < 1) {
+    if (isNaN(repsValue) || repsValue < 1) {
       newErrors.reps = 'Repetições devem ser maior que 0'
     }
 
@@ -55,7 +58,12 @@ export function SetForm({
     }
 
     try {
-      await onSubmit(formData)
+      const submitData = {
+        ...formData,
+        weight: typeof formData.weight === 'string' ? parseFloat(formData.weight) : formData.weight,
+        reps: typeof formData.reps === 'string' ? parseInt(formData.reps) : formData.reps
+      }
+      await onSubmit(submitData)
     } catch (error) {
       console.error('Erro ao salvar série:', error)
     }
