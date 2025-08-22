@@ -5,6 +5,8 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { SessionStats } from '@/types/session'
 import { SessionService } from '@/services/sessionService'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+// Adicionar import
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 
 interface ProgressChartProps {
   stats: SessionStats | null
@@ -63,14 +65,15 @@ export function ProgressChart({ stats }: ProgressChartProps) {
   return (
     <Card className="forge-card">
       <CardHeader>
-        <CardTitle className="text-[#E5E5E5] flex items-center gap-2">
-          📈 Progresso dos Últimos 30 Dias
+        <CardTitle className="text-[#E5E5E5] flex items-center gap-2 text-sm sm:text-base">
+          <span className="hidden sm:inline">📈 Progresso dos Últimos 30 Dias</span>
+          <span className="sm:hidden">📈 Progresso (30d)</span>
         </CardTitle>
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <div className="h-64 flex items-center justify-center">
-            <div className="text-[#A3A3A3]">Carregando gráfico...</div>
+          <div className="flex justify-center py-8">
+            <LoadingSpinner size="md" text="Carregando gráfico..." />
           </div>
         ) : (
           <ResponsiveContainer width="100%" height={300}>

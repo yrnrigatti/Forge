@@ -13,6 +13,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 
 export default function WorkoutsPage() {
   const router = useRouter()
@@ -166,7 +167,7 @@ export default function WorkoutsPage() {
   if (authLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+        <LoadingSpinner size="xl" text="Carregando..." />
       </div>
     )
   }
@@ -179,34 +180,17 @@ export default function WorkoutsPage() {
   return (
     <div className="min-h-screen" style={{ background: 'var(--background)' }}>
       <div className="container mx-auto px-4 py-8">
+        {/* Header */}
         <div className="mb-6">
-          <div className="flex items-center gap-3 mb-3">
-            <button
-              onClick={() => router.push('/')}
-              className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg transition-colors flex items-center justify-center flex-shrink-0"
-              style={{ 
-                backgroundColor: 'var(--muted)',
-                color: 'var(--muted-foreground)',
-                border: '1px solid var(--border)'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'var(--accent)'
-                e.currentTarget.style.color = 'var(--accent-foreground)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'var(--muted)'
-                e.currentTarget.style.color = 'var(--muted-foreground)'
-              }}
-              title="Voltar ao Início"
-            >
-              ←
-            </button>
+          {/* Linha superior: título */}
+          <div className="flex items-center gap-3 mb-4 sm:mb-0">
             <div className="min-w-0 flex-1">
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold truncate" style={{ color: 'var(--foreground)' }}>Meus Treinos</h1>
-              <p className="text-sm sm:text-base mt-1 truncate" style={{ color: 'var(--muted-foreground)' }}>Gerencie seus treinos e rotinas</p>
+              <p className="text-sm sm:text-base mt-1 truncate" style={{ color: 'var(--muted-foreground)' }}>Gerencie seus treinos personalizados</p>
             </div>
           </div>
           
+          {/* Linha inferior: botão novo treino */}
           <div className="flex justify-center sm:justify-end">
             <button
               onClick={() => router.push('/workouts/new')}

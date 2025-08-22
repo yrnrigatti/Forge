@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { SessionWithDetails } from '@/types/session'
 import { SessionService } from '@/services/sessionService'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import Link from 'next/link'
 
 export function RecentSessions() {
@@ -61,13 +62,8 @@ export function RecentSessions() {
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <div className="space-y-3">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="animate-pulse">
-                <div className="h-4 bg-[#2C2C2C] rounded mb-2"></div>
-                <div className="h-3 bg-[#2C2C2C] rounded w-3/4"></div>
-              </div>
-            ))}
+          <div className="flex justify-center py-8">
+            <LoadingSpinner size="md" text="Carregando sessões..." />
           </div>
         ) : recentSessions.length === 0 ? (
           <div className="text-center py-8">
