@@ -145,26 +145,6 @@ export default function ExerciseDetailPage() {
               {exercise.name}
             </h1>
           </div>
-          <div className="flex space-x-2">
-            {(() => {
-              console.log('Renderização condicional - is_global:', exercise?.is_global);
-              console.log('Condição !exercise?.is_global:', !exercise?.is_global);
-              return !exercise?.is_global;
-            })() && (
-              <>
-                <Button onClick={handleEdit} variant="secondary">
-                  ✏️ Editar
-                </Button>
-                <Button 
-                  onClick={handleDelete} 
-                  variant="destructive"
-                  disabled={deleting}
-                >
-                  {deleting ? 'Excluindo...' : '🗑️ Excluir'}
-                </Button>
-              </>
-            )}
-          </div>
         </div>
       </div>
 

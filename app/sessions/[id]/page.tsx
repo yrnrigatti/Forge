@@ -240,36 +240,75 @@ export default function SessionDetailPage() {
                 <CardContent>
                   {sets.length > 0 ? (
                     <div className="space-y-3">
-                      <div className="grid grid-cols-4 gap-4 text-sm font-medium text-[#A3A3A3] pb-3 border-b border-[#2C2C2C]">
+                      {/* Header da tabela - oculto no mobile */}
+                      <div className="hidden sm:grid grid-cols-4 gap-4 text-sm font-medium text-[#A3A3A3] pb-3 border-b border-[#2C2C2C]">
                         <span>Série</span>
                         <span>Peso (kg)</span>
                         <span>Reps</span>
                         <span>Ações</span>
                       </div>
                       {sets.map((set, index) => (
-                        <div key={set.id} className="grid grid-cols-4 gap-4 text-sm items-center py-3 border-b border-[#2C2C2C] last:border-b-0">
-                          <span className="text-[#E5E5E5] font-medium">{index + 1}</span>
-                          <span className="text-[#E5E5E5]">{set.weight}</span>
-                          <span className="text-[#E5E5E5]">{set.reps}</span>
-                          <div className="flex gap-2">
-                            {session.status === 'active' && (
-                              <>
-                                <Button
-                                  size="sm"
-                                  onClick={() => handleEditSet(set)}
-                                  className="text-xs px-3 py-1 text-[#FF6B35] border-[#FF6B35] bg-transparent hover:bg-[#FF6B35] hover:text-white rounded"
-                                >
-                                  Editar
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  onClick={() => handleDeleteSet(set.id)}
-                                  className="text-xs px-3 py-1 text-[#FF3D00] border-[#FF3D00] bg-transparent hover:bg-[#FF3D00] hover:text-white rounded"
-                                >
-                                  Excluir
-                                </Button>
-                              </>
-                            )}
+                        <div key={set.id} className="border-b border-[#2C2C2C] last:border-b-0">
+                          {/* Layout desktop - grid de 4 colunas */}
+                          <div className="hidden sm:grid grid-cols-4 gap-4 text-sm items-center py-3">
+                            <span className="text-[#E5E5E5] font-medium">{index + 1}</span>
+                            <span className="text-[#E5E5E5]">{set.weight}</span>
+                            <span className="text-[#E5E5E5]">{set.reps}</span>
+                            <div className="flex gap-2">
+                              {session.status === 'active' && (
+                                <>
+                                  <Button
+                                    size="sm"
+                                    onClick={() => handleEditSet(set)}
+                                    className="text-xs px-3 py-1 text-[#FF6B35] border-[#FF6B35] bg-transparent hover:bg-[#FF6B35] hover:text-white rounded"
+                                  >
+                                    Editar
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    onClick={() => handleDeleteSet(set.id)}
+                                    className="text-xs px-3 py-1 text-[#FF3D00] border-[#FF3D00] bg-transparent hover:bg-[#FF3D00] hover:text-white rounded"
+                                  >
+                                    Excluir
+                                  </Button>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                          
+                          {/* Layout mobile - formato card */}
+                          <div className="sm:hidden py-3 space-y-2">
+                            <div className="flex justify-between items-center">
+                              <span className="text-[#E5E5E5] font-medium text-sm">Série {index + 1}</span>
+                              {session.status === 'active' && (
+                                <div className="flex gap-2">
+                                  <Button
+                                    size="sm"
+                                    onClick={() => handleEditSet(set)}
+                                    className="text-xs px-2 py-1 text-[#FF6B35] border-[#FF6B35] bg-transparent hover:bg-[#FF6B35] hover:text-white rounded"
+                                  >
+                                    Editar
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    onClick={() => handleDeleteSet(set.id)}
+                                    className="text-xs px-2 py-1 text-[#FF3D00] border-[#FF3D00] bg-transparent hover:bg-[#FF3D00] hover:text-white rounded"
+                                  >
+                                    Excluir
+                                  </Button>
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex justify-between text-sm">
+                              <div className="flex gap-4">
+                                <span className="text-[#A3A3A3]">Peso:</span>
+                                <span className="text-[#E5E5E5] font-medium">{set.weight} kg</span>
+                              </div>
+                              <div className="flex gap-4">
+                                <span className="text-[#A3A3A3]">Reps:</span>
+                                <span className="text-[#E5E5E5] font-medium">{set.reps}</span>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       ))}

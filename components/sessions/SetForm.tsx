@@ -25,8 +25,8 @@ export function SetForm({
   isUpdate = false
 }: SetFormProps) {
   const [formData, setFormData] = useState({
-    weight: initialData.weight || 0,
-    reps: initialData.reps || 0,
+    weight: initialData.weight ?? '',
+    reps: initialData.reps ?? '',
     notes: initialData.notes || ''
   })
 
@@ -89,8 +89,8 @@ export function SetForm({
                 min="0"
                 step="0.5"
                 value={formData.weight}
-                onChange={(e) => handleFieldChange('weight', parseFloat(e.target.value) || 0)}
-                placeholder="0"
+                onChange={(e) => handleFieldChange('weight', e.target.value === '' ? '' : parseFloat(e.target.value) || '')}
+                placeholder="Ex: 20"
                 label="Peso (kg) *"
                 error={errors.weight}
               />
@@ -102,8 +102,8 @@ export function SetForm({
                 type="number"
                 min="1"
                 value={formData.reps}
-                onChange={(e) => handleFieldChange('reps', parseInt(e.target.value) || 0)}
-                placeholder="0"
+                onChange={(e) => handleFieldChange('reps', e.target.value === '' ? '' : parseInt(e.target.value) || '')}
+                placeholder="Ex: 10"
                 label="Repetições *"
                 error={errors.reps}
               />
