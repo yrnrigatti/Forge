@@ -93,11 +93,16 @@ export function useSession(sessionId: string): UseSessionReturn {
 
   const completeSession = useCallback(async (): Promise<boolean> => {
     if (!session) return false
-
+  
     try {
+      const endTime = new Date()
+      const startTime = new Date(session.started_at)
+      const duration = Math.round((endTime.getTime() - startTime.getTime()) / (1000 * 60)) // em minutos
+      
       await sessionService.updateSession(session.id, {
         status: 'completed',
-        ended_at: new Date().toISOString()
+        ended_at: endTime.toISOString(),
+        duration: duration
       })
       await refreshSession()
       return true

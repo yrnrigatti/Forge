@@ -101,6 +101,17 @@ export default function Home() {
             </Card>
           </Link>
 
+          <Link href="/dashboard">
+            <Card className="hover:border-[#FF6B35] transition-colors cursor-pointer">
+              <CardHeader>
+                <CardTitle className="text-[#FF6B35]">Dashboard</CardTitle>
+                <CardDescription>
+                  Visualize seu progresso
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </Link>
+
           <Link href="/history">
             <Card className="hover:border-[#FF6B35] transition-colors cursor-pointer">
               <CardHeader>
