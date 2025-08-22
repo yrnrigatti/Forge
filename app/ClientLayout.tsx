@@ -2,6 +2,7 @@
 
 import { Sidebar } from '@/components/layout/Sidebar';
 import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 
 interface ClientLayoutProps {
@@ -10,30 +11,40 @@ interface ClientLayoutProps {
 
 export function ClientLayout({ children }: ClientLayoutProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+  
+  // Verificar se está em páginas de autenticação ou página inicial
+  const isAuthPage = pathname.startsWith('/auth') || pathname === '/';
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
+  // Se estiver em página de auth, renderizar apenas o conteúdo
+  if (isAuthPage) {
+    return (
+      <div className="min-h-screen">
+        {children}
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen">
-      {/* Mobile Menu Button */}
-      <button
-        onClick={toggleMobileMenu}
-        className="fixed top-4 left-4 z-50 lg:hidden bg-[#FF6B35] text-white p-2 rounded-lg shadow-lg hover:bg-[#E55A2B] transition-colors"
-        aria-label="Toggle menu"
-      >
-        {isMobileMenuOpen ? (
-          <XMarkIcon className="w-6 h-6" />
-        ) : (
+      {!isMobileMenuOpen && (
+        <button
+          onClick={toggleMobileMenu}
+          className="fixed top-4 left-4 z-50 lg:hidden bg-[#FF6B35] text-white p-2 rounded-lg shadow-lg hover:bg-[#E55A2B] transition-colors"
+          aria-label="Toggle menu"
+        >
           <Bars3Icon className="w-6 h-6" />
-        )}
-      </button>
+        </button>
+      )}
 
-      {/* Mobile Overlay */}
+      {/* Mobile Overlay - Apenas área clicável invisível à direita do menu */}
       {isMobileMenuOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+          className="fixed top-0 left-64 right-0 bottom-0 z-30 lg:hidden"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
