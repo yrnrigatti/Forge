@@ -503,18 +503,30 @@ export class SessionService {
       if (!user) {
         throw new Error('Usuário não autenticado')
       }
-
+  
       const sessions = await this.getSessions()
-      const completedSessions = sessions.filter(s => s.completed)
+      const completedSessions = sessions.filter(s => s.status === 'completed')
       
       const totalVolume = completedSessions.reduce((sum, session) => {
         return sum + session.total_volume
       }, 0)
-
+  
+      // Calcular duração automaticamente se não estiver definida
       const averageDuration = completedSessions.length > 0 
-        ? completedSessions.reduce((sum, session) => sum + (session.duration || 0), 0) / completedSessions.length
+        ? completedSessions.reduce((sum, session) => {
+            let duration = session.duration || 0
+            
+            // Se não há duração salva, calcular baseado em started_at e ended_at
+            if (!duration && session.started_at && session.ended_at) {
+              const startTime = new Date(session.started_at).getTime()
+              const endTime = new Date(session.ended_at).getTime()
+              duration = Math.round((endTime - startTime) / (1000 * 60)) // em minutos
+            }
+            
+            return sum + duration
+          }, 0) / completedSessions.length
         : 0
-
+  
       const sortedSessions = completedSessions
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
       

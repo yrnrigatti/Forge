@@ -1,0 +1,5 @@
+export { DashboardStats } from './DashboardStats'
+export { ProgressChart } from './ProgressChart'
+export { WorkoutFrequencyChart } from './WorkoutFrequencyChart'
+export { ExerciseProgressTable } from './ExerciseProgressTable'
+export { RecentSessions } from './RecentSessions'
