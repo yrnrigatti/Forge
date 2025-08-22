@@ -354,7 +354,7 @@ export default function HistoryPage() {
 
         <Card className="p-6 mt-6">
           <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--foreground)' }}>
-            Sessões Recentes ({sessions.length})
+            Últimas Sessões ({sessions.length})
           </h3>
           
           {sessions.length === 0 ? (
