@@ -173,24 +173,6 @@ export default function WorkoutDetailPage() {
           >
             {workout.name}
           </h1>
-          <div className="flex space-x-2">
-            <Button 
-              onClick={() => router.push(`/workouts/${workoutId}/start`)}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              Iniciar Treino
-            </Button>
-            <Button onClick={handleEdit} variant="secondary">
-              ✏️ Editar
-            </Button>
-            <Button 
-              onClick={handleDelete} 
-              variant="destructive"
-              disabled={deleting}
-            >
-              {deleting ? 'Excluindo...' : '🗑️ Excluir'}
-            </Button>
-          </div>
         </div>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
