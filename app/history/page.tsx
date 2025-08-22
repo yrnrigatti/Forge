@@ -188,26 +188,6 @@ export default function HistoryPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="mb-6">
           <div className="flex items-center gap-3 mb-3">
-            <button
-              onClick={() => router.back()}
-              className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg transition-colors flex items-center justify-center flex-shrink-0"
-              style={{ 
-                backgroundColor: 'var(--muted)',
-                color: 'var(--muted-foreground)',
-                border: '1px solid var(--border)'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'var(--accent)'
-                e.currentTarget.style.color = 'var(--accent-foreground)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'var(--muted)'
-                e.currentTarget.style.color = 'var(--muted-foreground)'
-              }}
-              title="Voltar"
-            >
-              ←
-            </button>
             <div className="min-w-0 flex-1">
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold truncate" style={{ color: 'var(--foreground)' }}>Histórico de Treinos</h1>
               <p className="text-sm sm:text-base mt-1 truncate" style={{ color: 'var(--muted-foreground)' }}>Acompanhe seu progresso e estatísticas</p>

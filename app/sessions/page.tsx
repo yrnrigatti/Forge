@@ -131,35 +131,15 @@ export default function SessionsPage() {
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-6">
-          {/* Linha superior: botão voltar + título */}
-          <div className="flex items-center gap-3 mb-3">
-            <button
-              onClick={() => router.push('/')}
-              className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg transition-colors flex items-center justify-center flex-shrink-0"
-              style={{ 
-                backgroundColor: 'var(--muted)',
-                color: 'var(--muted-foreground)',
-                border: '1px solid var(--border)'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'var(--accent)'
-                e.currentTarget.style.color = 'var(--accent-foreground)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'var(--muted)'
-                e.currentTarget.style.color = 'var(--muted-foreground)'
-              }}
-              title="Voltar ao Início"
-            >
-              ←
-            </button>
+          {/* Linha superior: título */}
+          <div className="flex items-center gap-3 mb-4 sm:mb-0">
             <div className="min-w-0 flex-1">
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold truncate" style={{ color: 'var(--foreground)' }}>Sessões de Treino</h1>
-              <p className="text-sm sm:text-base mt-1 truncate" style={{ color: 'var(--muted-foreground)' }}>Gerencie suas sessões de treino e acompanhe seu progresso</p>
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold truncate" style={{ color: 'var(--foreground)' }}>Minhas Sessões</h1>
+              <p className="text-sm sm:text-base mt-1 truncate" style={{ color: 'var(--muted-foreground)' }}>Histórico de treinos realizados</p>
             </div>
           </div>
           
-          {/* Linha inferior: botão nova sessão (centralizado no mobile) */}
+          {/* Linha inferior: botão nova sessão */}
           <div className="flex justify-center sm:justify-end">
             <button
               onClick={() => router.push('/sessions/new')}

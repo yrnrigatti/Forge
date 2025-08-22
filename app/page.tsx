@@ -1,5 +1,7 @@
 'use client'
 
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -7,6 +9,13 @@ import Link from 'next/link'
 
 export default function Home() {
   const { user, loading, signOut } = useAuth()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!loading && user) {
+      router.push('/dashboard')
+    }
+  }, [user, loading, router])
 
   if (loading) {
     return (
@@ -21,23 +30,23 @@ export default function Home() {
   if (!user) {
     return (
       <div className="min-h-screen bg-[#121212] flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
+        <Card className="w-full max-w-md bg-[#1F1F1F] border-[#2C2C2C]">
           <CardHeader className="text-center">
             <CardTitle className="text-3xl font-bold text-[#FF6B35]">
               Forge
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-[#A3A3A3]">
               Seu companheiro para treinos de academia
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <Link href="/auth/login" className="block">
-              <Button className="w-full">
+              <Button className="w-full bg-[#FF6B35] hover:bg-[#FF3D00] text-white">
                 Fazer Login
               </Button>
             </Link>
             <Link href="/auth/register" className="block">
-              <Button variant="secondary" className="w-full">
+              <Button variant="secondary" className="w-full bg-[#2C2C2C] text-[#FF6B35] border-[#FF6B35] hover:bg-[#FF6B35] hover:text-white">
                 Criar Conta
               </Button>
             </Link>
@@ -47,82 +56,11 @@ export default function Home() {
     )
   }
 
+  // Se chegou aqui, está redirecionando
   return (
-    <div className="min-h-screen bg-[#121212] p-4">
-      <div className="max-w-4xl mx-auto">
-        <header className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-[#FF6B35]">
-            Forge
-          </h1>
-          <div className="flex items-center gap-4">
-            <span className="text-[#A3A3A3]">
-              Olá, {user.email}
-            </span>
-            <Button 
-              variant="secondary" 
-              onClick={signOut}
-            >
-              Sair
-            </Button>
-          </div>
-        </header>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Link href="/exercises">
-            <Card className="hover:border-[#FF6B35] transition-colors cursor-pointer">
-              <CardHeader>
-                <CardTitle className="text-[#FF6B35]">Exercícios</CardTitle>
-                <CardDescription>
-                  Gerencie seus exercícios
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          </Link>
-
-          <Link href="/workouts">
-            <Card className="hover:border-[#FF6B35] transition-colors cursor-pointer">
-              <CardHeader>
-                <CardTitle className="text-[#FF6B35]">Treinos</CardTitle>
-                <CardDescription>
-                  Crie e edite treinos
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          </Link>
-
-          <Link href="/sessions">
-            <Card className="hover:border-[#FF6B35] transition-colors cursor-pointer">
-              <CardHeader>
-                <CardTitle className="text-[#FF6B35]">Sessões</CardTitle>
-                <CardDescription>
-                  Registre seus treinos
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          </Link>
-
-          <Link href="/dashboard">
-            <Card className="hover:border-[#FF6B35] transition-colors cursor-pointer">
-              <CardHeader>
-                <CardTitle className="text-[#FF6B35]">Dashboard</CardTitle>
-                <CardDescription>
-                  Visualize seu progresso
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          </Link>
-
-          <Link href="/history">
-            <Card className="hover:border-[#FF6B35] transition-colors cursor-pointer">
-              <CardHeader>
-                <CardTitle className="text-[#FF6B35]">Histórico</CardTitle>
-                <CardDescription>
-                  Veja seu progresso
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          </Link>
-        </div>
+    <div className="min-h-screen bg-[#121212] flex items-center justify-center">
+      <div className="text-[#FF6B35] text-lg font-medium">
+        Redirecionando...
       </div>
     </div>
   )
