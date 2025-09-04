@@ -36,7 +36,7 @@ export function ProgressChart({ stats }: ProgressChartProps) {
 
       // Agrupar por data
       const groupedData = sessions.reduce((acc, session) => {
-        const date = session.date
+        const date = new Date(session.date).toISOString().split('T')[0]
         if (!acc[date]) {
           acc[date] = { volume: 0, sessions: 0 }
         }
@@ -45,14 +45,14 @@ export function ProgressChart({ stats }: ProgressChartProps) {
         return acc
       }, {} as Record<string, { volume: number; sessions: number }>)
 
-      // Converter para array e ordenar
+      // Converter para array, ordenar e depois formatar
       const data = Object.entries(groupedData)
+        .sort(([dateA], [dateB]) => new Date(dateA).getTime() - new Date(dateB).getTime())
         .map(([date, data]) => ({
-          date: new Date(date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
+          date: new Date(date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', timeZone: 'UTC' }),
           volume: data.volume,
           sessions: data.sessions
         }))
-        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
 
       setChartData(data)
     } catch (error) {
